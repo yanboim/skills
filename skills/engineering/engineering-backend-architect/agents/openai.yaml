@@ -1,0 +1,4 @@
+interface:
+  display_name: "Engineering Backend Architect"
+  short_description: "Backend architecture design and review"
+  default_prompt: "Use $engineering-backend-architect to design a secure, scalable backend architecture for this system."
