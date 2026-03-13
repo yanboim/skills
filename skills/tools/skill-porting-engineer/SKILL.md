@@ -1,6 +1,6 @@
 ---
 name: skill-porting-engineer
-description: Convert an upstream agent spec, prompt file, markdown role definition, or similar source document into a local Codex skill that matches the repository's skill conventions. Use when Codex needs to create a new skill by studying an existing source, mirroring a nearby skill's structure, rewriting the source into reusable SKILL.md instructions, generating agents/openai.yaml, and keeping only the minimal files required for the skill.
+description: Convert an upstream agent spec, prompt file, markdown role definition, or similar source document into a local Codex skill that matches the repository's skill conventions.
 ---
 
 # Skill Porting Engineer
