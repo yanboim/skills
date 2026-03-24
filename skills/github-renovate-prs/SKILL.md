@@ -102,15 +102,17 @@ In preset mode, query each repository directly and merge the results for one com
 
 ### 2. Build a concise candidate plan
 
-Do not force the user into a numbered selection workflow, but do assign stable per-plan indices to candidate items so the user can reference them quickly in multi-repository mode.
+Do not force the user into a numbered selection workflow, but do assign stable per-plan indices to all plan items so the user can reference them quickly in multi-repository mode.
 
 For every `候选执行` and `跳过` item, include:
 
-- current plan index for candidate items, such as `1.` or `[1]`
+- current plan index for each item, such as `1.` or `[1]`
 - `owner/repo#number`
 - PR title
 - raw GitHub PR URL
 - planned action for candidates, or skip reason for skipped items
+
+Use one continuous index sequence across the whole plan snapshot. `跳过` items must continue counting after the last `候选执行` item instead of restarting from `1`.
 
 In multi-repository mode, never rely on bare PR numbers such as `#111` as the only reference form because they are ambiguous across repositories.
 
@@ -144,19 +146,19 @@ Prefer a compact summary like:
   动作: 先添加 approve review，再 squash merge 到 PR 的目标分支，并删除分支
 
 跳过 5 个
-- flc1125/go-yuque#130 chore(deps)!: update module github.com/aaa/bbb to v2
+4. flc1125/go-yuque#130 chore(deps)!: update module github.com/aaa/bbb to v2
   https://github.com/flc1125/go-yuque/pull/130
   原因: major
-- go-tapd/tapd#131 chore(deps): update module github.com/ccc/ddd
+5. go-tapd/tapd#131 chore(deps): update module github.com/ccc/ddd
   https://github.com/go-tapd/tapd/pull/131
   原因: checks pending
-- flc1125/go-gitlab-webhook#132 chore(deps): update module github.com/eee/fff
+6. flc1125/go-gitlab-webhook#132 chore(deps): update module github.com/eee/fff
   https://github.com/flc1125/go-gitlab-webhook/pull/132
   原因: blocked
-- go-fries/fries#133 chore(deps): update module github.com/ggg/hhh
+7. go-fries/fries#133 chore(deps): update module github.com/ggg/hhh
   https://github.com/go-fries/fries/pull/133
   原因: 需人工判断
-- go-fries/fries#134 chore(deps): replace package xxx with yyy
+8. go-fries/fries#134 chore(deps): replace package xxx with yyy
   https://github.com/go-fries/fries/pull/134
   原因: 需人工判断
 
@@ -171,13 +173,17 @@ Accept natural-language overrides such as:
 
 - `只执行 1 3`
 - `排除 2`
-- `排除 #123`
+- `排除 flc1125/go-cron#123`
 - `只执行 go-cron`
 - `只处理 flc1125/go-cron`
-- `只执行 #123 #124`
+- `只执行 flc1125/go-cron#123 go-fries/fries#124`
 - `包含 major`
 
 Prefer plan indices for quick selection in multi-repository mode, and prefer `owner/repo#number` when the user needs an unambiguous persistent reference across turns.
+
+Only accept bare PR numbers such as `#123` in a single-repository context. In multi-repository mode, require either a current-plan index or a full `owner/repo#number` reference.
+
+Treat `只执行 <index>` as selecting from the current `候选执行` set by default. If the user references a `跳过` item by index, do not silently add it to execution. Instead, explain the skip reason and ask for an explicit override that matches the risk, such as `包含 major` followed by a rebuilt plan.
 
 ### 4. Confirm before execution
 
@@ -239,7 +245,9 @@ Apply these rules when the user changes scope after the plan is shown:
 
 - repo filters remove other repositories from the execution set
 - explicit PR numbers win over broader repo filters
-- current-plan indices are shorthand for candidate items in the latest visible plan
+- current-plan indices are shorthand for indexed plan items in the latest visible plan
+- bare `#123` references are only valid in a single-repository context
+- skipped items do not enter the execution set unless the user gives an explicit override that addresses the skip reason
 - `包含 major` only changes the major exclusion rule; it does not bypass final confirmation
 - if the new request invalidates the current scan, rescan before execution
 
