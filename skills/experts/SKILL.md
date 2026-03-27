@@ -52,6 +52,11 @@ Common expert cards:
 - [references/role-local-transport-expert.md](references/role-local-transport-expert.md)
 - [references/role-experience-curator.md](references/role-experience-curator.md)
 - [references/role-destination-culture-expert.md](references/role-destination-culture-expert.md)
+- [references/role-information-discovery-expert.md](references/role-information-discovery-expert.md)
+- [references/role-source-verification-expert.md](references/role-source-verification-expert.md)
+- [references/role-recency-expert.md](references/role-recency-expert.md)
+- [references/role-coverage-analyst.md](references/role-coverage-analyst.md)
+- [references/role-signal-vs-noise-analyst.md](references/role-signal-vs-noise-analyst.md)
 - [references/role-qa-expert.md](references/role-qa-expert.md)
 - [references/example-platform-modernization-panel.md](references/example-platform-modernization-panel.md)
 - [references/example-analytics-dashboard-panel.md](references/example-analytics-dashboard-panel.md)
@@ -60,6 +65,8 @@ Common expert cards:
 - [references/example-task-local-identity-panel.md](references/example-task-local-identity-panel.md)
 - [references/example-family-japan-panel.md](references/example-family-japan-panel.md)
 - [references/example-istanbul-culture-panel.md](references/example-istanbul-culture-panel.md)
+- [references/example-ai-release-watch-panel.md](references/example-ai-release-watch-panel.md)
+- [references/example-acquisition-rumor-panel.md](references/example-acquisition-rumor-panel.md)
 - [references/task-local-expert-template.md](references/task-local-expert-template.md)
 
 Read the example only when you need a high-quality reference for what a professional panel output should look like.
