@@ -7,6 +7,8 @@ description: Assemble a panel of experts to assess a problem from multiple profe
 
 Assemble a focused panel of experts around one problem and produce a chaired recommendation.
 
+This is a cross-domain expert panel skill for complex decisions. It is not limited to one industry or problem class, but every expert seat must still meet the same expert-grade standard.
+
 This skill is for expert judgment first. It is not a generic task router.
 
 ## Operating Mode
@@ -17,6 +19,9 @@ This skill is for expert judgment first. It is not a generic task router.
 - Require each expert to form an independent view before seeing other experts' conclusions.
 - Treat disagreement as useful output, not failure.
 - Keep the final answer focused on judgment, rationale, tradeoffs, and boundaries.
+- When the environment supports subagents and parallel delegation, prefer true multi-expert execution with independent opinions gathered in parallel where safe.
+- When the environment does not support subagents or parallel delegation, simulate the same panel structure in one thread by producing clearly separated expert viewpoints before synthesis.
+- Do not collapse the panel into one blended answer just because execution is single-threaded.
 
 ## Resource Map
 
@@ -40,11 +45,22 @@ Common expert cards:
 - [references/role-payments-expert.md](references/role-payments-expert.md)
 - [references/role-compliance-expert.md](references/role-compliance-expert.md)
 - [references/role-ml-expert.md](references/role-ml-expert.md)
+- [references/role-itinerary-expert.md](references/role-itinerary-expert.md)
+- [references/role-budget-travel-expert.md](references/role-budget-travel-expert.md)
+- [references/role-travel-risk-expert.md](references/role-travel-risk-expert.md)
+- [references/role-family-travel-expert.md](references/role-family-travel-expert.md)
+- [references/role-local-transport-expert.md](references/role-local-transport-expert.md)
+- [references/role-experience-curator.md](references/role-experience-curator.md)
+- [references/role-destination-culture-expert.md](references/role-destination-culture-expert.md)
 - [references/role-qa-expert.md](references/role-qa-expert.md)
 - [references/example-platform-modernization-panel.md](references/example-platform-modernization-panel.md)
 - [references/example-analytics-dashboard-panel.md](references/example-analytics-dashboard-panel.md)
 - [references/example-subscription-billing-panel.md](references/example-subscription-billing-panel.md)
 - [references/example-ai-assistant-panel.md](references/example-ai-assistant-panel.md)
+- [references/example-task-local-identity-panel.md](references/example-task-local-identity-panel.md)
+- [references/example-family-japan-panel.md](references/example-family-japan-panel.md)
+- [references/example-istanbul-culture-panel.md](references/example-istanbul-culture-panel.md)
+- [references/task-local-expert-template.md](references/task-local-expert-template.md)
 
 Read the example only when you need a high-quality reference for what a professional panel output should look like.
 
@@ -83,6 +99,37 @@ Pick experts that match the real decision surface. Prefer distinct viewpoints ov
 
 Use the role cards in [references/roles-index.md](references/roles-index.md) when they fit. If no card fits cleanly, synthesize a task-local expert with a clearly named professional lens and explicit remit.
 
+### 2a. Synthesize a task-local expert when needed
+
+Create a task-local expert only when the registry does not cover a real decision lens.
+
+A task-local expert must:
+
+- represent a genuine expert discipline, not an ad hoc job title
+- have a narrow and defensible professional lens
+- be likely to disagree with at least one other expert for substantive reasons
+- add decision value that cannot be cleanly absorbed by an existing card
+
+Do not create fake-specialized seats such as:
+
+- feature-name experts
+- implementation-step experts
+- generic smart-reviewer variants
+- duplicate experts that only rephrase another card
+
+When you create a task-local expert, read [references/task-local-expert-template.md](references/task-local-expert-template.md) and define:
+
+- expert name
+- professional lens
+- decision surface
+- required evidence
+- core evaluation criteria
+- critical unknowns
+- reject conditions
+- explicit non-goals and boundary with nearby experts
+
+Task-local experts are valid only for the current panel unless the user explicitly asks to persist them into the library.
+
 ### 3. Gather independent opinions
 
 Ask each expert to assess the problem independently.
@@ -100,6 +147,14 @@ Each opinion should cover:
 - what the expert would reject and why
 
 Do not let experts anchor on each other too early.
+
+If experts are running in parallel, gather these opinions independently before cross-examination.
+
+If experts are running in a single thread, still keep the outputs structurally independent:
+
+- write each expert section separately
+- do not let later experts silently inherit prior conclusions
+- preserve disagreement even when the same agent is simulating multiple seats
 
 ### 4. Run cross-examination
 
@@ -167,6 +222,10 @@ Use this structure when returning a panel result:
 ## Question
 - <the decision or problem being assessed>
 
+## Decision Criteria
+- <which evaluation axes matter most in this panel>
+- <which constraints are primary versus secondary>
+
 ## Panel
 - chair: <why this chair is appropriate>
 - <expert>: <perspective and remit>
@@ -174,6 +233,7 @@ Use this structure when returning a panel result:
 ## Expert Opinions
 - <expert>: <core judgment, rationale, major risks>
 - evidence: <what is known, what is inferred>
+- evidence quality: <direct evidence | indirect evidence | expert inference>
 - confidence: <high | medium | low> and why
 - critical unknowns: <what could still change the answer>
 - reject conditions: <what would make this expert reject a path>
@@ -191,9 +251,17 @@ Use this structure when returning a panel result:
 ## Tradeoffs
 - <what is gained and what is given up>
 
+## Minority View
+- <which dissenting view did not win>
+- <under what conditions that view becomes stronger>
+
 ## Confidence and Unknowns
 - <where the panel is confident>
 - <where the panel is still reasoning under uncertainty>
+
+## Immediate Implications
+- <what should be decided, validated, or sequenced next if this recommendation is accepted>
+- <what signal should trigger re-evaluation of the panel's conclusion>
 
 ## Boundaries
 - holds when: <conditions where this advice fits>
