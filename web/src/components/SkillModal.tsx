@@ -4,7 +4,8 @@ import { Skill } from '@/lib/skills';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { X, Terminal, Copy, Check, ExternalLink } from 'lucide-react';
+import { X, Terminal, Copy, Check, ExternalLink, CalendarDays, Files } from 'lucide-react';
+import { formatSkillPublishedAt } from '@/lib/utils';
 
 interface SkillModalProps {
   skill: Skill | null;
@@ -14,8 +15,55 @@ interface SkillModalProps {
   onClose: () => void;
 }
 
+const GITHUB_BLOB_BASE_URL = 'https://github.com/flc1125/skills/blob/main/skills';
+
+function normalizeGithubPathParts(parts: string[]) {
+  const normalized: string[] = [];
+
+  for (const part of parts) {
+    if (!part || part === '.') {
+      continue;
+    }
+
+    if (part === '..') {
+      normalized.pop();
+      continue;
+    }
+
+    normalized.push(part);
+  }
+
+  return normalized;
+}
+
+function resolveSkillContentLink(skill: Skill, href?: string) {
+  if (!href) {
+    return href;
+  }
+
+  if (
+    href.startsWith('http://') ||
+    href.startsWith('https://') ||
+    href.startsWith('mailto:') ||
+    href.startsWith('tel:') ||
+    href.startsWith('#')
+  ) {
+    return href;
+  }
+
+  const [pathname, hash = ''] = href.split('#');
+  const baseDir = skill.path.split('/').slice(0, -1);
+  const targetParts = pathname.split('/');
+  const resolvedPath = normalizeGithubPathParts([...baseDir, ...targetParts]).join('/');
+
+  return `${GITHUB_BLOB_BASE_URL}/${resolvedPath}${hash ? `#${hash}` : ''}`;
+}
+
 export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillModalProps) {
   const [copied, setCopied] = useState(false);
+  const displayName = skill?.metadata?.name ?? skill?.name ?? 'Loading skill';
+  const publishedAt = formatSkillPublishedAt(skill?.metadata?.created);
+  const fileCountLabel = skill ? `${skill.fileCount} ${skill.fileCount === 1 ? 'file' : 'files'}` : null;
 
   useEffect(() => {
     if (copied) {
@@ -73,22 +121,40 @@ export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillMo
                     </div>
                     <div>
                       <Dialog.Title as="h3" className="text-lg font-bold text-gray-900 dark:text-white">
-                        {skill?.name ?? 'Loading skill'}
+                        {displayName}
                       </Dialog.Title>
+                      {skill ? (
+                        <div className="mt-2 flex flex-wrap items-center gap-3 text-[12px] font-medium text-gray-400 dark:text-gray-500">
+                          <span className="inline-flex items-center rounded-full bg-gray-100/80 px-2.5 py-1 text-[10px] font-medium lowercase tracking-[0.08em] text-gray-500 dark:bg-gray-800/80 dark:text-gray-400">
+                            {skill.name}
+                          </span>
+                          {publishedAt ? (
+                            <div className="flex items-center gap-1.5">
+                              <CalendarDays size={12} className="flex-shrink-0" />
+                              <span>{publishedAt}</span>
+                            </div>
+                          ) : null}
+                          {fileCountLabel ? (
+                            <div className="flex items-center gap-1.5">
+                              <Files size={12} className="flex-shrink-0" />
+                              <span>{fileCountLabel}</span>
+                            </div>
+                          ) : null}
+                          <a
+                            href={sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-gray-400 transition-colors hover:text-black dark:text-gray-500 dark:hover:text-white"
+                            title="View source file on GitHub"
+                          >
+                            <ExternalLink size={12} className="flex-shrink-0" />
+                            <span>View on GitHub</span>
+                          </a>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {skill ? (
-                      <a
-                        href={sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-1.5 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-black dark:hover:text-white"
-                        title="View source file on GitHub"
-                      >
-                        <ExternalLink size={18} />
-                      </a>
-                    ) : null}
                     <button
                       onClick={onClose}
                       className="p-1.5 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-black dark:hover:text-white"
@@ -135,6 +201,21 @@ export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillMo
                                 {children}
                               </code>
                             )
+                          },
+                          a({ href, children, ...props }) {
+                            const resolvedHref = skill ? resolveSkillContentLink(skill, href) : href;
+                            const isExternal = resolvedHref?.startsWith('http://') || resolvedHref?.startsWith('https://');
+
+                            return (
+                              <a
+                                href={resolvedHref}
+                                target={isExternal ? '_blank' : undefined}
+                                rel={isExternal ? 'noopener noreferrer' : undefined}
+                                {...props}
+                              >
+                                {children}
+                              </a>
+                            );
                           }
                         }}
                       >
@@ -149,17 +230,16 @@ export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillMo
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2.5 ml-1">
                     Install this Skill
                   </p>
-                  <div className="relative group">
-                    <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-black border border-gray-100 dark:border-gray-800 rounded-xl transition-all group-hover:border-gray-200 dark:group-hover:border-gray-700">
+                  <div className="group">
+                    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-2.5 bg-gray-50 dark:bg-black border border-gray-100 dark:border-gray-800 rounded-xl transition-all group-hover:border-gray-200 dark:group-hover:border-gray-700">
                       <Terminal size={16} className="text-gray-400 flex-shrink-0" />
-                      <code className="text-xs font-mono text-gray-600 dark:text-gray-400 select-all truncate pr-28">
+                      <code className="min-w-0 flex-1 select-all truncate text-xs font-mono text-gray-600 dark:text-gray-400">
                         {command}
                       </code>
-                    </div>
-                    <div className="absolute right-1.5 top-1/2 -translate-y-1/2">
                       <button
                         onClick={copyToClipboard}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold text-xs transition-all shadow-sm ${
+                        type="button"
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold text-xs leading-none transition-all shadow-sm ${
                           copied 
                             ? 'bg-green-500 text-white scale-95' 
                             : 'bg-black dark:bg-white text-white dark:text-black hover:opacity-90 active:scale-95'

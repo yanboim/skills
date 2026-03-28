@@ -7,6 +7,7 @@ import { SkillCard } from './SkillCard';
 import { SkillModal } from './SkillModal';
 import { Search } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
+import { parseSkillMetadataDate } from '@/lib/utils';
 
 interface MarketplaceProps {
   initialSkills: SkillMetadata[];
@@ -83,13 +84,34 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
 
   const filteredSkills = useMemo(() => {
     return initialSkills.filter((skill) => {
+      const displayName = skill.metadata?.name ?? skill.name;
+      const displayDescription = skill.metadata?.description ?? skill.description;
       const matchesSearch = 
-        skill.name.toLowerCase().includes(search.toLowerCase()) ||
-        skill.description.toLowerCase().includes(search.toLowerCase());
+        displayName.toLowerCase().includes(search.toLowerCase()) ||
+        displayDescription.toLowerCase().includes(search.toLowerCase());
       
       return matchesSearch;
     });
   }, [initialSkills, search]);
+
+  const totalSkills = initialSkills.length;
+  const totalFiles = useMemo(
+    () => initialSkills.reduce((sum, skill) => sum + skill.fileCount, 0),
+    [initialSkills]
+  );
+
+  const orderedSkills = useMemo(() => {
+    return [...filteredSkills].sort((left, right) => {
+      const leftTime = parseSkillMetadataDate(left.metadata?.created)?.getTime() ?? 0;
+      const rightTime = parseSkillMetadataDate(right.metadata?.created)?.getTime() ?? 0;
+
+      if (leftTime !== rightTime) {
+        return rightTime - leftTime;
+      }
+
+      return left.name.localeCompare(right.name);
+    });
+  }, [filteredSkills]);
 
   const handleCardClick = (skillMeta: SkillMetadata) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -116,6 +138,26 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
         </p>
       </div>
 
+      <div className="mx-auto mb-10 flex max-w-sm items-center justify-center gap-7 text-center">
+        <div className="flex min-w-0 flex-col items-center">
+          <span className="text-[1.55rem] font-bold leading-none tracking-[-0.04em] text-gray-950 dark:text-gray-50">
+            {totalSkills}
+          </span>
+          <span className="mt-1 text-[10px] font-medium uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">
+            Skills
+          </span>
+        </div>
+        <span className="text-gray-200 dark:text-gray-800">/</span>
+        <div className="flex min-w-0 flex-col items-center">
+          <span className="text-[1.55rem] font-bold leading-none tracking-[-0.04em] text-gray-950 dark:text-gray-50">
+            {totalFiles}
+          </span>
+          <span className="mt-1 text-[10px] font-medium uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">
+            Files
+          </span>
+        </div>
+      </div>
+
       {/* Controls */}
       <div className="max-w-xl mx-auto mb-12">
         <div className="relative group">
@@ -133,13 +175,13 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence mode="popLayout">
-          {filteredSkills.map((skill) => (
+          {orderedSkills.map((skill) => (
             <SkillCard key={skill.slug} skill={skill} onClick={handleCardClick} />
           ))}
         </AnimatePresence>
       </div>
 
-      {filteredSkills.length === 0 && (
+      {orderedSkills.length === 0 && (
         <div className="py-24 text-center">
           <div className="inline-flex p-8 bg-gray-50 dark:bg-gray-900 rounded-full mb-6">
             <Search size={48} className="text-gray-300" />

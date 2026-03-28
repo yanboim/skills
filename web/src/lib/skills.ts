@@ -2,8 +2,10 @@ import fs from 'fs';
 import path from 'path';
 
 export interface SkillMetadata {
+  metadata: SkillFrontmatterMetadata | null;
   name: string;
   description: string;
+  fileCount: number;
   path: string;
   slug: string;
   installName: string;
@@ -11,6 +13,14 @@ export interface SkillMetadata {
 
 export interface Skill extends SkillMetadata {
   content: string;
+}
+
+export interface SkillFrontmatterMetadata {
+  name: string;
+  description: string;
+  author: string;
+  created: string;
+  version?: string;
 }
 
 interface SkillsDataset {
@@ -41,8 +51,10 @@ function loadSkillsDataset(): SkillsDataset {
 
 export async function getSkills(): Promise<SkillMetadata[]> {
   return loadSkillsDataset().skills.map((skill) => ({
+    metadata: skill.metadata,
     name: skill.name,
     description: skill.description,
+    fileCount: skill.fileCount,
     path: skill.path,
     slug: skill.slug,
     installName: skill.installName,

@@ -15,18 +15,46 @@ function toSlug(filePath) {
   return path.dirname(filePath).replace(/[/\\]/g, '-');
 }
 
+function normalizeMetadata(metadata) {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
+    return null;
+  }
+
+  const normalized = { ...metadata };
+
+  if (metadata.created instanceof Date) {
+    normalized.created = formatMetadataDate(metadata.created);
+  } else if (metadata.created != null) {
+    normalized.created = String(metadata.created);
+  }
+
+  if (metadata.version == null) {
+    normalized.version = null;
+  }
+
+  return normalized;
+}
+
+function formatMetadataDate(date) {
+  return date.toISOString().replace('.000Z', 'Z');
+}
+
 async function main() {
   const files = await glob('**/SKILL.md', { cwd: skillsDir });
 
   const skills = await Promise.all(
     files.map(async (file) => {
       const fullPath = path.join(skillsDir, file);
+      const skillDir = path.dirname(fullPath);
       const fileContents = await readFile(fullPath, 'utf8');
       const { data, content } = matter(fileContents);
+      const skillFiles = await glob('**/*', { cwd: skillDir, nodir: true });
 
       return {
         name: data.name,
         description: data.description,
+        metadata: normalizeMetadata(data.metadata),
+        fileCount: skillFiles.length,
         path: file,
         slug: toSlug(file),
         installName: data.name,
