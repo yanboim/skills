@@ -1,184 +1,194 @@
 ---
 name: gitlab-mr-inline-comment
-description: Post prepared inline comments to exact lines in a GitLab merge request by resolving MR context, mapping comments onto the diff, deduplicating existing discussions, and creating line-level discussions through the GitLab API. Use when you already know what to comment and need those comments published on GitLab MR code lines.
+description: Publish a single inline comment on a GitLab merge request by anchoring it to a valid diff line with `glab api`. Use when Codex needs to place one review comment on a specific MR file and line, while reusing the user's existing `glab` authentication and stopping on invalid anchors instead of falling back to a general comment.
 metadata:
   name: GitLab MR Inline Comment
-  description: Publish prepared comments as deduplicated line-level discussions on a GitLab merge request.
+  description: Post a single anchored GitLab MR inline comment with host-aware `glab` usage.
   author: Flc
   created: 2026-03-30T02:46:31Z
 ---
 
 # GitLab MR Inline Comment
 
-Publish prepared comments to exact lines in a GitLab merge request.
+Publish one anchored inline comment on a GitLab merge request.
 
 ## Operating Mode
 
-Act as a GitLab MR inline comment publisher, not as a reviewer.
+Act as a narrow GitLab review helper.
 
 Prioritize:
 
-- exact MR context before any write
-- correct diff mapping before any API call
-- duplicate avoidance before bulk posting
-- explicit skips over guessed line positions
+- correct GitLab host and repository context before any write
+- valid MR diff SHAs before payload assembly
+- valid file path and line anchors before posting
+- explicit failure over silent downgrade to a general comment
+- reuse of the user's existing `glab` authentication and repository context
 
-Do not invent review findings. Do not silently convert vague comments into line comments.
+Assume `glab` is installed unless local evidence shows otherwise.
 
-## Resource Map
+Do not require extra tokens, `.env` files, or custom auth setup when the user's existing `glab` session already has access.
 
-Read these only as needed:
+Read these references only when needed:
 
-- Input contract and examples: [references/input-schema.md](references/input-schema.md)
-- GitLab position model: [references/gitlab-position.md](references/gitlab-position.md)
-- Dedupe and fallback rules: [references/dedupe.md](references/dedupe.md)
+- exact command patterns: [references/verified-commands.md](references/verified-commands.md)
+- payload shape and field semantics: [references/api-shape.md](references/api-shape.md)
+- current MR version and anchor resolution: [references/current-diff-resolution.md](references/current-diff-resolution.md)
+- common failure cases and stop conditions: [references/failure-modes.md](references/failure-modes.md)
 
-Use [scripts/post-inline-comments.mjs](scripts/post-inline-comments.mjs) only when the task is already reduced to validated GitLab discussion payloads. Treat the script as a narrow posting helper, not as the place where repository or merge request context is discovered. Prefer passing auth through stdin or a token file rather than exposing secrets directly on the command line.
+## Required Inputs
 
-## Workflow
+Collect or derive these values before posting:
 
-Follow this sequence unless the user asks for one narrow subtask.
-
-### 1. Confirm the task is comment publication
-
-Use this skill only when the user already has comment content or clearly wants Codex to post line comments.
-
-Valid inputs include:
-
-- structured comment JSON
-- a file containing comments
-- comments already produced earlier in the session
-- lint or analysis output that is already normalized to path and line
-
-If the task is really asking for review, use a review-oriented workflow first and come back to this skill only for publishing.
-
-### 2. Resolve GitLab MR context before writing
-
-Before posting, identify:
-
-- project path
-- merge request IID
-- head SHA
-- target branch
-- usable GitLab API base URL
-
-If any of these are missing and cannot be derived safely, stop before write operations. Gather this context outside the posting script and pass only the final posting inputs into it.
-
-### 3. Normalize comments
-
-Normalize every input comment to the contract in [references/input-schema.md](references/input-schema.md).
-
-Minimum required fields:
-
-- `path`
-- `line`
+- `mr_iid`
 - `body`
+- `new_path`
+- `new_line`
 
-Optional fields:
+Resolve one repository context:
 
-- `old_path`
-- `old_line`
-- `fingerprint`
-- `suggestion`
+- current repository `glab` context, or
+- explicit GitLab project path such as `group/subgroup/repo`, or
+- a GitLab merge request URL that can be parsed into host, project, and MR IID
 
-Keep comments explicit and ready to post. Do not add generic review framing.
-
-### 4. Build diff-backed positions
-
-Use local git history and the available GitLab tooling to map comments onto the merge request diff.
-
-Prefer:
-
-```bash
-git merge-base <target_sha> <head_sha>
-git diff --find-renames <merge_base> <head_sha>
-```
-
-For each normalized comment:
-
-- verify the file is in the MR diff
-- verify the line can be anchored in the diff
-- derive `new_path` and `new_line`
-- derive `old_path` and `old_line` when available and useful
-
-Do not guess positions for comments outside the diff.
-
-For GitLab API payload details, read [references/gitlab-position.md](references/gitlab-position.md).
-
-### 5. Deduplicate before posting
-
-List existing merge request discussions first and compare against the normalized comments.
-
-Use the rules in [references/dedupe.md](references/dedupe.md).
-
-Prefer skipping a probable duplicate over posting the same body again on the same line.
-
-### 6. Post merge request discussions
-
-Create GitLab merge request discussions with a `position` object.
-
-Use `position_type: "text"` and populate:
+Resolve these MR diff fields from the current merge request version:
 
 - `base_sha`
 - `start_sha`
 - `head_sha`
-- `new_path`
-- `new_line`
-- optional `old_path`
-- optional `old_line`
 
-If you use the script, pass ready-to-post payloads into it rather than asking the script to discover repository state on its own.
+## Workflow
 
-If the user provided a suggestion, append it to the body only when the suggestion range is compatible with the anchored line.
+Follow this sequence unless the user asks for one narrower part.
 
-### 7. Return a compact posting summary
+### 1. Confirm GitLab context with the lightest viable command
 
-Report:
+Prefer the user's current repository context first.
 
-- posted count
-- skipped count
-- failed count
-- any comments skipped because they were outside the diff or missing context
+Use bare `glab` commands when the current directory is already the target GitLab repository.
 
-If a comment could not be mapped to a valid diff line, say so explicitly instead of implying it was published.
+Only inspect `git remote -v`, add `GITLAB_HOST`, or use explicit repository arguments when:
 
-## Decision Rules
+- `glab` resolves to the wrong host
+- the task targets another repository
+- authentication fails against an unexpected instance
+- the user provides a merge request URL on another GitLab host
 
-- Do not post inline comments without a stable path and line.
-- Do not fabricate `old_line` or `old_path` if diff mapping does not support them.
-- Do not downgrade to a general MR note unless the user explicitly asks for that fallback.
-- Stop on missing auth, missing MR identity, or missing head SHA.
-- Batch posting is fine, but context validation happens before the first write.
+Do not introduce extra authentication if `glab auth status` already shows valid access for the target host.
+
+### 2. Identify the target merge request
+
+Normalize the task to one merge request.
+
+If the user gives a merge request URL, parse it into:
+
+- host
+- project path
+- MR IID
+
+If the user gives a project path and MR IID, use them directly.
+
+If the current repository is already the target project, prefer repository-context commands over manual URL construction.
+
+### 3. Read the current MR version SHAs
+
+Before building the discussion payload, fetch the merge request state needed for inline anchors.
+
+Use [references/current-diff-resolution.md](references/current-diff-resolution.md) when exact field names or version-selection rules matter.
+
+Resolve:
+
+- `base_sha`
+- `start_sha`
+- `head_sha`
+
+Do not guess or reuse stale SHAs from old output.
+
+If the current MR version cannot be read reliably, stop and report that inline comment posting is blocked by missing diff context.
+
+### 4. Validate the anchor
+
+Confirm that:
+
+- `new_path` exists in the current MR diff
+- `new_line` is a valid commentable line on the new side of the diff
+
+Use [references/current-diff-resolution.md](references/current-diff-resolution.md) when deciding whether the target line is safely anchorable.
+
+For v1, support only `new_path` plus `new_line`.
+
+Do not guess the path or line.
+
+Do not silently switch to a general merge request comment when the anchor is invalid.
+
+### 5. Build the payload and post the discussion
+
+Use the minimal payload shape from [references/api-shape.md](references/api-shape.md).
+
+Post to the merge request discussions endpoint with `glab api`.
+
+Use the user's existing `glab` authentication and host context whenever possible.
+
+### 6. Return a concise result
+
+On success, report:
+
+- target project and MR IID
+- anchored file path and line
+- short confirmation that the inline comment was posted
+
+On failure, report the concrete blocking reason, such as:
+
+- host or auth mismatch
+- missing MR version SHAs
+- path not in diff
+- line not commentable
+- GitLab API validation error
 
 ## Output Structure
 
-When summarizing a completed posting run, use:
+When the task is to post the comment directly, summarize the execution result like this:
 
 ```markdown
-# GitLab MR Inline Comment Result
+# Inline Comment Result
 
-## Context
-- project: <group/project>
+## Target
+- project: <group/subgroup/repo>
 - mr: !<iid>
+- file: <new_path>
+- line: <new_line>
 
-## Posted
-- <count>
-
-## Skipped
-- <count and reason summary>
-
-## Failed
-- <count and reason summary>
+## Result
+- status: <posted | failed>
+- detail: <short reason or confirmation>
 ```
 
-When the task is blocked, replace the counts with the exact missing prerequisite.
+## Decision Rules
+
+- Prefer repository-context `glab` commands over manual encoded project IDs when the current directory already matches the target project.
+- Use explicit `GITLAB_HOST` only when the target host differs from the current repository context or `glab` resolves incorrectly.
+- Treat inline comment posting as blocked when the current MR diff SHAs are unavailable or ambiguous.
+- Treat invalid anchors as hard failures.
+- Keep v1 limited to one inline comment on the new side of the diff.
 
 ## Red Flags
 
 Stop and reassess if:
 
-- the task does not actually provide comment content
-- the repository is not in a usable git state for diff mapping
-- the merge request target branch or head SHA cannot be identified
-- the requested comments are mostly outside the diff
-- the same comments appear to have already been posted
+- multiple GitLab hosts are present and the write target is unclear
+- the authenticated host and intended host disagree
+- the merge request URL, project, or IID do not resolve to one clear target
+- `base_sha`, `start_sha`, and `head_sha` cannot be read from the current MR state
+- `new_path` is not present in the current diff
+- `new_line` is not a valid new-side diff line
+- the only fallback would be posting a non-inline general comment
+
+## Out Of Scope For V1
+
+Do not add these behaviors in v1:
+
+- old-side line comments
+- multi-line or range comments
+- batch comment publishing
+- draft review or pending review workflows
+- automatic comment placement based on code analysis
+- automatic downgrade to a general merge request note
