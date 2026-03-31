@@ -1,9 +1,9 @@
 # Verified `glab` Commands
 
-Checked on 2026-03-20 against:
+Checked on 2026-03-31 against:
 
 - GitLab Docs pages under `https://docs.gitlab.com/cli/`
-- local `glab 1.89.0` `--help` output
+- local `glab 1.90.0` `--help` output
 
 Use this file when you need exact command names or flag spelling.
 
@@ -25,8 +25,8 @@ Confirmed behavior:
 
 Docs:
 
-- `https://docs.gitlab.com/editor_extensions/gitlab_cli/`
-- `https://docs.gitlab.com/cli/`
+- `https://docs.gitlab.com/cli/auth/login/`
+- `https://docs.gitlab.com/cli/auth/status/`
 
 ## Repository commands
 
@@ -42,12 +42,20 @@ glab repo clone gitlab-org/cli
 GITLAB_HOST=salsa.debian.org glab repo clone myrepo
 ```
 
+Docs:
+
+- `https://docs.gitlab.com/cli/repo/view/`
+- `https://docs.gitlab.com/cli/repo/clone/`
+
 ## Merge request commands
 
 - `glab mr create`
 - `glab mr list`
 - `glab mr view <iid>`
+- `glab mr diff [<id> | <branch>]`
 - `glab mr checkout <iid>`
+- `glab mr note [<id> | <branch>]`
+- `glab mr update [<id> | <branch>]`
 - `glab mr merge <iid>`
 
 Checked `create` flags:
@@ -63,15 +71,46 @@ Checked `create` flags:
 - `-w, --web`
 - `-y, --yes`
 
-Doc page:
+Checked `diff` flags:
+
+- `--color`
+- `--raw`
+- `-R, --repo`
+
+Checked `note` flags:
+
+- `-m, --message`
+- `--unique`
+- `-R, --repo`
+
+Checked `update` flags:
+
+- `-t, --title`
+- `-d, --description`
+- `-l, --label`
+- `-u, --unlabel`
+- `-a, --assignee`
+- `--reviewer`
+- `--draft`
+- `-r, --ready`
+- `--target-branch`
+- `-R, --repo`
+- `-y, --yes`
+
+Doc pages:
 
 - `https://docs.gitlab.com/cli/mr/create/`
+- `https://docs.gitlab.com/cli/mr/diff/`
+- `https://docs.gitlab.com/cli/mr/note/`
+- `https://docs.gitlab.com/cli/mr/update/`
 
 ## Issue commands
 
 - `glab issue list`
 - `glab issue view <iid>`
 - `glab issue create`
+- `glab issue note <issue-id>`
+- `glab issue update <id>`
 
 Checked `create` flags:
 
@@ -84,10 +123,31 @@ Checked `create` flags:
 - `--web`
 - `-y, --yes`
 
+Checked `note` flags:
+
+- `-m, --message`
+- `-R, --repo`
+
+Checked `update` flags:
+
+- `-t, --title`
+- `-d, --description`
+- `-l, --label`
+- `-u, --unlabel`
+- `-a, --assignee`
+- `-m, --milestone`
+- `--due-date`
+- `-c, --confidential`
+- `-p, --public`
+- `-R, --repo`
+- `-w, --weight`
+
 Doc pages:
 
 - `https://docs.gitlab.com/cli/issue/`
 - `https://docs.gitlab.com/cli/issue/create/`
+- `https://docs.gitlab.com/cli/issue/note/`
+- `https://docs.gitlab.com/cli/issue/update/`
 
 ## CI/CD commands
 
@@ -97,6 +157,11 @@ Doc pages:
 - `glab ci status`
 - `glab ci trace <job-id|job-name>`
 - `glab ci view [branch/tag]`
+
+Confirmed behavior:
+
+- `glab ci get` and `glab ci view` both exist in `glab 1.90.0`; neither appears deprecated in current help or docs.
+- Keep `glab ci view` in the quick command set for interactive inspection, and keep `glab ci get` as the lower-level JSON-oriented variant.
 
 Doc page:
 
@@ -131,6 +196,7 @@ Checked flags:
 - `-X, --method`
 - `-F, --field`
 - `-f, --raw-field`
+- `--form`
 - `-H, --header`
 - `--paginate`
 - `--input`
