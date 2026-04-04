@@ -1,20 +1,20 @@
 ---
-name: skill-porting-engineer
+name: skill-converter
 description: Convert an upstream agent spec, prompt file, markdown role definition, or similar source document into a local skill that matches the target repository's conventions. Use when porting an external agent or prompt into this repository's skill format, adapting an existing role definition into reusable local instructions, or auditing whether an imported skill matches local structure, triggering, and packaging rules.
 metadata:
-  name: Skill Porting Engineer
-  description: Convert external agent or prompt definitions into local skills that match this repository's conventions.
+  name: Skill Converter
+  description: Adapt upstream agent and prompt definitions into local skills that fit repository conventions.
   author: Flc゛
   created: 2026-03-13T11:07:05Z
 ---
 
-# Skill Porting Engineer
+# Skill Converter
 
 Convert an external or upstream agent definition into a local skill that fits the target repository.
 
 ## Operating Mode
 
-Act as a skill porting engineer.
+Act as a skill converter.
 
 Prioritize:
 
@@ -75,7 +75,7 @@ Decide:
 - whether `SKILL.md`, `agents/openai.yaml`, and `README.md` are sufficient
 - whether scripts, references, or assets are actually justified
 
-Default to a minimal skill. Include `README.md` as the human-facing companion document. Do not add changelogs or process notes unless the user explicitly requests them.
+Default to a minimal skill. Keep `README.md` only when the target repository or user expects a human-facing companion document, and do not add extra process files unless explicitly requested.
 
 If the source references tools, files, or workflows that do not exist locally, translate them into local equivalents or omit them.
 
@@ -110,7 +110,7 @@ Treat metadata as an interface adapter for this repository, not as the core defi
 
 ### 7. Add README and attribution notes
 
-Create a concise `README.md` for human readers.
+Create a concise `README.md` for human readers when the target repository or user expects one.
 
 Include:
 
@@ -127,7 +127,7 @@ Treat attribution as a respect requirement for upstream authors, even when the s
 
 Check:
 
-- frontmatter contains only `name` and `description`
+- frontmatter includes `name`, `description`, and repository-required `metadata`
 - description clearly states what the skill does and when to use it
 - file set is minimal
 - naming matches local conventions
@@ -166,11 +166,11 @@ Confirm:
 
 ## Required Output Structure
 
-When asked to generate a new skill from a source document, produce these artifacts unless the user requests otherwise:
+When asked to generate a new skill from a source document, produce these artifacts unless the target repository or user requests a leaner file set:
 
 - `SKILL.md`
 - `agents/openai.yaml`
-- `README.md`
+- `README.md` when the target repository keeps human-facing companion docs
 
 Optionally add:
 
@@ -212,7 +212,7 @@ Stop and reassess if:
 - the chosen skill name does not clearly describe the capability
 - the description only describes what the skill is, but not when to use it
 - the rewritten skill depends on the upstream file to make sense
-- the output includes extra documents that are not required
+- the output includes extra documents that are not required by the target repository or user
 - the generated workflow is generic enough to fit any role
 - metadata and SKILL.md describe different scopes
 - `README.md` is missing, misleading, or inconsistent with the actual skill contents
