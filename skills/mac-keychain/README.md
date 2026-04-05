@@ -1,6 +1,6 @@
 # mac-keychain
 
-Local Codex skill for controlled access to macOS Keychain credentials.
+Thin Codex skill for working with macOS Keychain generic password items.
 
 ## Install
 
@@ -10,25 +10,17 @@ npx skills add https://github.com/flc1125/skills --skill mac-keychain
 
 ## Purpose
 
-Use this skill when you need to work with local credentials stored in macOS Keychain, including:
+Use this skill when you need to work with local credentials stored in macOS Keychain by `service + account`, including:
 
 - creating a new credential
 - updating an existing credential
 - checking whether a credential exists
 - reading non-secret metadata
-- retrieving a plaintext secret after explicit confirmation
-- deleting a credential after explicit confirmation
+- retrieving a plaintext secret for downstream use
+- revealing a plaintext secret in visible output
+- deleting a credential
 
-This skill is designed for macOS generic password items. It does not cover Windows Credential Manager, Linux keyrings, certificates, or private-key workflows.
-
-## Security Model
-
-This skill defaults to non-disclosure.
-
-- `exists` and `read-meta` do not expose plaintext secrets
-- `set` and `update` change credential state without echoing the secret
-- `read-secret`, `reveal-secret`, and `delete` are high-risk actions and require explicit confirmation
-- if another skill requests a plaintext secret, the caller identity, target credential, and purpose should be surfaced before approval
+This skill is designed for macOS generic password items. It does not cover Windows Credential Manager, Linux keyrings, certificates, private-key workflows, or broad keychain administration.
 
 ## Runtime Requirements
 
@@ -38,7 +30,16 @@ The current implementation assumes:
 - `/usr/bin/security`
 - `/bin/zsh`
 
-If `zsh` or `security` is unavailable, the skill should stop and present a fallback plan instead of pretending the bundled scripts can run.
+If `zsh` or `security` is unavailable, the skill should stop and report the missing dependency instead of pretending the bundled scripts can run.
+
+## Interface
+
+This skill is intentionally narrow:
+
+- the target must be explicit through `service + account`
+- caller attribution, approval prompts, and workflow policy belong to the caller
+- `read-secret` is for downstream machine use
+- `reveal-secret` and `delete` require `--confirmed`
 
 ## Bundled Scripts
 
@@ -55,7 +56,7 @@ scripts/
 ```
 
 All scripts accept `--service` and `--account`.
-High-risk scripts require `--confirmed`.
+Use `--keychain` only when the target is not the default `login` keychain.
 
 ## Example Usage
 
@@ -71,46 +72,37 @@ Read metadata without exposing the secret:
 scripts/keychain-read-meta.sh --service github --account flc
 ```
 
-Read a plaintext secret for downstream use after approval:
+Read a plaintext secret for downstream use:
+
+```bash
+scripts/keychain-read-secret.sh \
+  --service github \
+  --account flc
+```
+
+Emit only the secret value:
 
 ```bash
 scripts/keychain-read-secret.sh \
   --service github \
   --account flc \
-  --requesting-type skill \
-  --skill-name github-create-pr \
-  --purpose "authenticate GitHub API operations" \
-  --confirmed
+  --value-only
 ```
 
-Reveal a plaintext secret in user-visible output after approval:
+Reveal a plaintext secret in visible output:
 
 ```bash
 scripts/keychain-reveal-secret.sh \
   --service github \
   --account flc \
-  --requesting-actor current-user \
-  --purpose "display the token to the current user" \
   --confirmed
 ```
 
-## Structure
+Delete a credential:
 
-```text
-mac-keychain/
-├── SKILL.md
-├── README.md
-├── agents/
-│   └── openai.yaml
-├── references/
-│   └── security-rules.md
-└── scripts/
-    ├── common.sh
-    ├── keychain-delete.sh
-    ├── keychain-exists.sh
-    ├── keychain-read-meta.sh
-    ├── keychain-read-secret.sh
-    ├── keychain-reveal-secret.sh
-    ├── keychain-set.sh
-    └── keychain-update.sh
+```bash
+scripts/keychain-delete.sh \
+  --service github \
+  --account flc \
+  --confirmed
 ```
