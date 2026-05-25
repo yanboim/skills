@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from 'react';
+import Link from 'next/link';
 import Script from 'next/script';
 import { GaPageViewTracker } from '@/components/GaPageViewTracker';
 import { GithubNavLink } from '@/components/GithubNavLink';
@@ -61,20 +62,24 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <GaPageViewTracker />
         </Suspense>
-        <header className="border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-40">
+        <header className="sticky top-0 z-40 border-b border-black/5 bg-white/80 backdrop-blur-xl dark:border-white/10 dark:bg-[#0f1218]/78">
           <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center">
+            <Link
+              href="/"
+              className="flex items-center gap-2 rounded-2xl outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[#8ddfc9]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0f1218]"
+              aria-label="Go to homepage"
+            >
+              <div className="w-8 h-8 bg-black dark:bg-white rounded-xl flex items-center justify-center">
                 <span className="text-white dark:text-black font-bold text-lg">S</span>
               </div>
-              <span className="font-semibold text-xl tracking-tight">Flc&apos;s Skills</span>
-            </div>
-            <nav className="rounded-full border border-gray-200 bg-white/70 p-1 shadow-sm backdrop-blur-md dark:border-gray-700 dark:bg-gray-900/70">
+              <span className="font-bold text-xl text-[#111318] dark:text-white">Flc&apos;s Skills</span>
+            </Link>
+            <nav className="rounded-full border border-black/5 bg-white/80 p-1 shadow-[0_16px_50px_-36px_rgba(15,23,42,0.65)] backdrop-blur-md dark:border-white/10 dark:bg-white/[0.08]">
               <div className="flex items-center gap-1">
                 <ThemeToggle />
                 <span
                   aria-hidden="true"
-                  className="h-4 w-px bg-gray-200 dark:bg-gray-700"
+                  className="h-4 w-px bg-black/10 dark:bg-white/10"
                 />
                 <GithubNavLink />
               </div>
@@ -82,11 +87,11 @@ export default function RootLayout({
           </div>
         </header>
         <main>{children}</main>
-        <footer className="border-t border-gray-100 dark:border-gray-800 py-12 mt-20">
+        <footer className="border-t border-black/5 py-12 mt-20 dark:border-white/10">
           <div className="max-w-7xl mx-auto px-4 text-center">
-            <p className="text-gray-900 dark:text-white font-medium mb-2">Flc&apos;s Skills</p>
-            <p className="text-gray-500 text-sm italic">Built with Codex and Gemini, designed for efficiency</p>
-            <p className="text-gray-400 text-xs mt-4">© 2026 Flc&apos;s Skills. All rights reserved.</p>
+            <p className="text-[#111318] dark:text-white font-bold mb-2">Flc&apos;s Skills</p>
+            <p className="text-[#687586] dark:text-[#aeb7c6] text-sm">Reusable agent workflows in a calm interface.</p>
+            <p className="text-[#9aa4b2] dark:text-[#6f7887] text-xs mt-4">© 2026 Flc&apos;s Skills. All rights reserved.</p>
           </div>
         </footer>
       </body>
