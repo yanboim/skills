@@ -23,25 +23,13 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [isLoadingSkill, setIsLoadingSkill] = useState(false);
   const [skillLoadError, setSkillLoadError] = useState<string | null>(null);
-  const [hasMounted, setHasMounted] = useState(false);
   const lastTrackedSearch = useRef<string | null>(null);
   const activeSelectedSkill =
     selectedSkillSlug && selectedSkill?.slug === selectedSkillSlug ? selectedSkill : null;
-  const isModalOpen = hasMounted && selectedSkillSlug !== null;
+  const isModalOpen = selectedSkillSlug !== null;
 
   useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hasMounted) {
-      return;
-    }
-
     if (!selectedSkillSlug) {
-      setSelectedSkill(null);
-      setIsLoadingSkill(false);
-      setSkillLoadError(null);
       return;
     }
 
@@ -55,7 +43,7 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
         const response = await fetch(`/api/skills/${selectedSkillSlug}`);
 
         if (!response.ok) {
-          throw new Error(response.status === 404 ? 'Skill not found.' : 'Failed to load skill details.');
+          throw new Error(response.status === 404 ? '未找到该技能。' : '技能详情加载失败。');
         }
 
         const data = await response.json();
@@ -68,7 +56,7 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
 
         if (!cancelled) {
           setSelectedSkill(null);
-          setSkillLoadError(error instanceof Error ? error.message : 'Failed to load skill details.');
+          setSkillLoadError(error instanceof Error ? error.message : '技能详情加载失败。');
         }
       } finally {
         if (!cancelled) {
@@ -82,7 +70,7 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
     return () => {
       cancelled = true;
     };
-  }, [hasMounted, selectedSkillSlug]);
+  }, [selectedSkillSlug]);
 
   const filteredSkills = useMemo(() => {
     return initialSkills.filter((skill) => {
@@ -163,10 +151,10 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
         <div className="relative mx-auto max-w-5xl">
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-balance text-[clamp(2.75rem,6vw,5.5rem)] font-black leading-[1.02] text-[#101114] dark:text-white">
-              A quieter way to discover agent skills.
+              更安静地，发现好用的 Agent 技能。
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-[#5f6673] dark:text-[#c6ccd8] sm:text-lg">
-              Find reusable workflows, inspect their instructions, and copy the exact install command without leaving the workspace.
+              发现可复用工作流，查看完整说明，一键复制安装命令。
             </p>
           </div>
 
@@ -175,13 +163,13 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
               <div className="inline-flex items-center gap-2 rounded-full bg-white/60 px-4 py-2 shadow-[0_16px_48px_-40px_rgba(15,23,42,0.55)] backdrop-blur dark:bg-white/[0.07]">
                 <Layers3 size={15} className="text-[#209a7a]" />
                 <span className="font-black text-[#111318] dark:text-white">{totalSkills}</span>
-                <span className="font-medium text-[#687586] dark:text-[#b8c0cc]">published skills</span>
+                <span className="font-medium text-[#687586] dark:text-[#b8c0cc]">个已发布技能</span>
               </div>
 
               <div className="inline-flex items-center gap-2 rounded-full bg-white/60 px-4 py-2 shadow-[0_16px_48px_-40px_rgba(15,23,42,0.55)] backdrop-blur dark:bg-white/[0.07]">
                 <Files size={15} className="text-[#6473d8]" />
                 <span className="font-black text-[#111318] dark:text-white">{totalFiles}</span>
-                <span className="font-medium text-[#687586] dark:text-[#b8c0cc]">source files</span>
+                <span className="font-medium text-[#687586] dark:text-[#b8c0cc]">个源文件</span>
               </div>
             </div>
 
@@ -190,7 +178,8 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
               <Search className="pointer-events-none absolute left-5 top-1/2 z-10 -translate-y-1/2 text-[#7f8a9a]" size={20} />
               <input
                 type="text"
-                placeholder="Search skills..."
+                placeholder="搜索技能..."
+                aria-label="搜索技能"
                 className="relative z-0 h-16 w-full rounded-[1.35rem] bg-white/82 pl-14 pr-5 text-base font-medium text-[#15171c] outline-none shadow-[0_30px_90px_-58px_rgba(15,23,42,0.55)] backdrop-blur transition placeholder:text-[#8a94a3] focus:ring-4 focus:ring-[#8ddfc9]/25 dark:bg-white/[0.08] dark:text-white"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -208,13 +197,13 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
       <section className="mt-0">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-3xl font-black text-[#111318] dark:text-white">Explore skills</h2>
+            <h2 className="text-3xl font-black text-[#111318] dark:text-white">探索技能</h2>
             <p className="mt-2 text-sm leading-6 text-[#687586] dark:text-[#aeb7c6]">
-              Newer skill definitions appear first. Select any entry to read the full instruction file.
+              最新技能优先展示。选择任意技能即可查看完整说明。
             </p>
           </div>
           <div className="flex rounded-full bg-black px-4 py-2 text-xs font-bold text-white dark:bg-white dark:text-black">
-            {orderedSkills.length} available
+            {orderedSkills.length} 个可用
           </div>
         </div>
 
@@ -236,8 +225,8 @@ export function Marketplace({ initialSkills }: MarketplaceProps) {
             <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-[#e7fbf4]">
               <Search size={30} className="text-[#209a7a]" />
             </div>
-            <h3 className="text-2xl font-black text-[#111318] dark:text-white">No results found</h3>
-            <p className="mt-2 text-[#687586] dark:text-[#aeb7c6]">Try adjusting your search terms.</p>
+            <h3 className="text-2xl font-black text-[#111318] dark:text-white">没有找到结果</h3>
+            <p className="mt-2 text-[#687586] dark:text-[#aeb7c6]">试试其他搜索关键词。</p>
           </div>
         )}
       </section>

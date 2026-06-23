@@ -14,9 +14,9 @@ const OPTIONS: Array<{
   label: string;
   icon: typeof Laptop;
 }> = [
-  { value: 'system', label: 'Auto', icon: Laptop },
-  { value: 'light', label: 'Light', icon: Sun },
-  { value: 'dark', label: 'Dark', icon: Moon },
+  { value: 'system', label: '跟随系统', icon: Laptop },
+  { value: 'light', label: '浅色', icon: Sun },
+  { value: 'dark', label: '深色', icon: Moon },
 ];
 
 function isThemeMode(value: string | null): value is ThemeMode {
@@ -91,7 +91,7 @@ export function ThemeToggle() {
 
   return (
     <Menu as="div" className="relative">
-      <Menu.Button className="inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm font-medium text-[#5f6673] transition-colors hover:bg-[#eef8f5] hover:text-black dark:text-[#c6ccd8] dark:hover:bg-white/10 dark:hover:text-white">
+      <Menu.Button aria-label="切换显示主题" className="inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm font-medium text-[#5f6673] transition-colors hover:bg-[#eef8f5] hover:text-black dark:text-[#c6ccd8] dark:hover:bg-white/10 dark:hover:text-white">
         <ActiveIcon size={15} />
         <span className="hidden sm:inline">{activeOption.label}</span>
         <ChevronDown size={14} className="text-[#9aa4b2]" />

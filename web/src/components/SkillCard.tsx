@@ -14,12 +14,12 @@ interface SkillCardProps {
 }
 
 export function SkillCard({ skill, position, onClick }: SkillCardProps) {
-  const cardRef = useRef<HTMLDivElement | null>(null);
+  const cardRef = useRef<HTMLButtonElement | null>(null);
   const hasTrackedImpression = useRef(false);
   const displayName = skill.metadata?.name ?? skill.name;
   const displayDescription = skill.metadata?.description ?? skill.description;
   const publishedAt = formatSkillPublishedAt(skill.metadata?.created);
-  const fileCountLabel = `${skill.fileCount} ${skill.fileCount === 1 ? 'file' : 'files'}`;
+  const fileCountLabel = `${skill.fileCount} 个文件`;
 
   useEffect(() => {
     const element = cardRef.current;
@@ -64,7 +64,8 @@ export function SkillCard({ skill, position, onClick }: SkillCardProps) {
   };
 
   return (
-    <motion.div
+    <motion.button
+      type="button"
       ref={cardRef}
       layout
       initial={{ opacity: 0, y: 20 }}
@@ -73,7 +74,7 @@ export function SkillCard({ skill, position, onClick }: SkillCardProps) {
       whileHover={{ y: -3 }}
       transition={{ duration: 0.22 }}
       onClick={handleClick}
-      className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[1.5rem] border border-black/5 bg-white/80 p-5 shadow-[0_24px_70px_-52px_rgba(15,23,42,0.55)] backdrop-blur transition-all hover:border-[#9ce6d2] hover:bg-white dark:border-white/10 dark:bg-white/[0.055] dark:hover:border-[#8ddfc9]/50 dark:hover:bg-white/[0.075]"
+      className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[1.5rem] border border-black/5 bg-white/80 p-5 text-left shadow-[0_24px_70px_-52px_rgba(15,23,42,0.55)] backdrop-blur transition-all hover:border-[#9ce6d2] hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#209a7a] focus-visible:ring-offset-2 dark:border-white/10 dark:bg-white/[0.055] dark:hover:border-[#8ddfc9]/50 dark:hover:bg-white/[0.075] dark:focus-visible:ring-[#8ddfc9] dark:focus-visible:ring-offset-[#0f1218]"
     >
       <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[radial-gradient(circle_at_center,rgba(141,223,201,0.26),rgba(198,216,255,0.16)_45%,transparent_72%)] blur-2xl opacity-70 transition-opacity group-hover:opacity-100 dark:bg-[radial-gradient(circle_at_center,rgba(141,223,201,0.2),rgba(198,216,255,0.12)_45%,transparent_72%)]" />
 
@@ -110,6 +111,6 @@ export function SkillCard({ skill, position, onClick }: SkillCardProps) {
           ) : null}
         </div>
       ) : null}
-    </motion.div>
+    </motion.button>
   );
 }

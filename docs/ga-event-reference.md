@@ -1,274 +1,201 @@
-# Google Analytics Event Reference
+# Google Analytics 事件参考
 
-This document describes the Google Analytics events currently implemented in the marketplace app under `web/`.
+中文 | [English](./ga-event-reference_EN.md)
 
-## Document Type
+本文档说明 `web/` 市场应用当前实现的 Google Analytics 事件。
 
-Reference
+## 文档信息
 
-## Audience
+- **类型**：参考文档
+- **读者**：需要在 GA 控制台验证事件上报或调整埋点代码的仓库维护者
+- **目标**：记录事件名称、触发条件、参数和实现位置
 
-Repository maintainers who need to verify event reporting in the GA dashboard or adjust analytics instrumentation in code.
+## 范围
 
-## Goal
+包含：
 
-Use this document as the source of truth for:
+- 应用当前配置的 Measurement ID
+- 代码中实现的事件名称和参数
+- 负责发送事件的文件位置
+- 验证事件上报的操作步骤
 
-- which GA events exist
-- when each event fires
-- which parameters are attached
-- where each event is implemented
+不包含：
 
-## Scope
-
-Included in scope:
-
-- the measurement ID currently configured in the app
-- the event names and parameter payloads implemented in code
-- the file locations responsible for sending each event
-- practical checks for validating event delivery
-
-Excluded from scope:
-
-- GA dashboard setup outside this repository
-- custom dimensions or audience configuration in GA
-- historical analytics interpretation
+- 仓库之外的 GA 控制台配置
+- GA 自定义维度或受众配置
+- 历史分析数据解读
 
 ## Measurement ID
 
-The app currently sends events to `G-GYPECK2498`.
+应用当前将事件发送到 `G-GYPECK2498`。
 
-The GA bootstrap is defined in [layout.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/app/layout.tsx).
+GA 初始化代码位于 [layout.tsx](../web/src/app/layout.tsx)。
 
-## Event Summary
+## 事件汇总
 
-| Event name | Trigger | Key parameters |
-| --- | --- | --- |
-| `page_view` | Initial page load and subsequent route or query-string changes | `page_path`, `page_location`, `page_title` |
-| `nav_github_click` | Click on the GitHub link in the site header | `target`, `location` |
-| `skill_list_impression` | A skill card first becomes visible in the viewport | `skill_slug`, `skill_name`, `position`, `list_type` |
-| `skill_card_click` | Click on a skill card in the marketplace grid | `skill_slug`, `skill_name`, `position`, `source` |
-| `skill_detail_view` | A skill detail modal opens with a loaded skill | `skill_slug`, `skill_name`, `install_name` |
-| `skill_install_copy` | Click on the copy button for the install command | `skill_slug`, `skill_name`, `install_name` |
-| `skill_source_click` | Click on the GitHub source link inside the skill modal | `skill_slug`, `skill_name`, `target` |
-| `skill_search` | A search query remains unchanged for 500ms | `query`, `result_count` |
+| 事件名称 | 触发条件 | 主要参数 |
+|---|---|---|
+| `page_view` | 首次加载，以及后续路由或查询参数变化 | `page_path`、`page_location`、`page_title` |
+| `nav_github_click` | 点击网站头部的 GitHub 链接 | `target`、`location` |
+| `skill_list_impression` | 技能卡片首次进入视口 | `skill_slug`、`skill_name`、`position`、`list_type` |
+| `skill_card_click` | 点击市场网格中的技能卡片 | `skill_slug`、`skill_name`、`position`、`source` |
+| `skill_detail_view` | 已加载技能的详情弹窗打开 | `skill_slug`、`skill_name`、`install_name` |
+| `skill_install_copy` | 点击安装命令复制按钮 | `skill_slug`、`skill_name`、`install_name` |
+| `skill_source_click` | 点击技能弹窗中的 GitHub 源文件链接 | `skill_slug`、`skill_name`、`target` |
+| `skill_search` | 搜索词保持 500ms 未变化 | `query`、`result_count` |
 
-## Common Parameters
+## 通用参数
 
-These parameters appear across multiple skill-related events:
+| 参数 | 含义 |
+|---|---|
+| `skill_slug` | 市场和详情 API 使用的路由 slug |
+| `skill_name` | UI 中显示的技能名称 |
+| `install_name` | `npx skills add ... --skill` 命令使用的安装标识符 |
+| `position` | 当前排序后市场网格中从 1 开始的卡片位置 |
+| `target` | 被点击外链的目标名称 |
 
-| Parameter | Meaning |
-| --- | --- |
-| `skill_slug` | The route slug used by the marketplace and detail API |
-| `skill_name` | The displayed skill name in the UI |
-| `install_name` | The install identifier used in the `npx skills add ... --skill` command |
-| `position` | The 1-based card position in the current ordered marketplace grid |
-| `target` | The outbound target name for a clicked link |
-
-## Event Reference
+## 事件详情
 
 ### `page_view`
 
-Purpose:
-Track page views for the initial render and client-side navigation.
+**用途**：跟踪首次渲染和客户端导航产生的页面浏览。
 
-Trigger:
-Sent by a dedicated client component whenever the pathname or query string changes.
+**触发条件**：每当 pathname 或查询字符串变化时，由独立客户端组件发送。
 
-Parameters:
+| 参数 | 值 |
+|---|---|
+| `page_path` | 当前 pathname 与查询字符串 |
+| `page_location` | 完整浏览器 URL |
+| `page_title` | 当前文档标题 |
 
-| Parameter | Value |
-| --- | --- |
-| `page_path` | Current pathname plus query string |
-| `page_location` | Full browser URL |
-| `page_title` | Current document title |
+实现位置：
 
-Implementation:
+- [GaPageViewTracker.tsx](../web/src/components/GaPageViewTracker.tsx)
+- [gtag.ts](../web/src/lib/gtag.ts)
+- [layout.tsx](../web/src/app/layout.tsx)
 
-- [GaPageViewTracker.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/GaPageViewTracker.tsx)
-- [gtag.ts](/Users/flc/data/www/open-source/flc1125/skills/web/src/lib/gtag.ts)
-- [layout.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/app/layout.tsx)
-
-Notes:
-
-- Automatic GA page views are disabled with `send_page_view: false`.
-- This avoids duplicate reporting when manual route tracking is enabled.
+说明：自动页面浏览已通过 `send_page_view: false` 禁用，以避免与手动路由跟踪重复上报。
 
 ### `nav_github_click`
 
-Purpose:
-Track clicks on the global GitHub repository link in the header.
+**用途**：跟踪网站头部全局 GitHub 仓库链接的点击。
 
-Trigger:
-Sent when the header GitHub link is clicked.
+**触发条件**：用户点击头部 GitHub 链接。
 
-Parameters:
-
-| Parameter | Value |
-| --- | --- |
+| 参数 | 值 |
+|---|---|
 | `target` | `github_repo` |
 | `location` | `header` |
 
-Implementation:
-
-- [GithubNavLink.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/GithubNavLink.tsx)
+实现位置：[GithubNavLink.tsx](../web/src/components/GithubNavLink.tsx)
 
 ### `skill_list_impression`
 
-Purpose:
-Track which skill cards were actually seen by the user.
+**用途**：跟踪用户实际看到的技能卡片。
 
-Trigger:
-Sent once per card when the card first intersects the viewport.
+**触发条件**：卡片首次与视口相交时，每张卡片发送一次。
 
-Parameters:
-
-| Parameter | Value |
-| --- | --- |
-| `skill_slug` | Current skill slug |
-| `skill_name` | Current skill display name |
-| `position` | 1-based position in the current grid |
+| 参数 | 值 |
+|---|---|
+| `skill_slug` | 当前技能 slug |
+| `skill_name` | 当前技能展示名称 |
+| `position` | 当前网格中从 1 开始的位置 |
 | `list_type` | `marketplace_grid` |
 
-Implementation:
+实现位置：[SkillCard.tsx](../web/src/components/SkillCard.tsx)
 
-- [SkillCard.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/SkillCard.tsx)
-
-Notes:
-
-- The event is deduplicated per mounted card.
-- Visibility is based on `IntersectionObserver` with a `0.5` threshold.
+说明：事件在每次卡片挂载周期内去重，可见性由阈值为 `0.5` 的 `IntersectionObserver` 判断。
 
 ### `skill_card_click`
 
-Purpose:
-Track clicks from the marketplace grid into skill details.
+**用途**：跟踪用户从市场网格进入技能详情的行为。
 
-Trigger:
-Sent when a user clicks a skill card.
+**触发条件**：用户点击技能卡片。
 
-Parameters:
-
-| Parameter | Value |
-| --- | --- |
-| `skill_slug` | Current skill slug |
-| `skill_name` | Current skill display name |
-| `position` | 1-based position in the current grid |
+| 参数 | 值 |
+|---|---|
+| `skill_slug` | 当前技能 slug |
+| `skill_name` | 当前技能展示名称 |
+| `position` | 当前网格中从 1 开始的位置 |
 | `source` | `marketplace_grid` |
 
-Implementation:
-
-- [SkillCard.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/SkillCard.tsx)
+实现位置：[SkillCard.tsx](../web/src/components/SkillCard.tsx)
 
 ### `skill_detail_view`
 
-Purpose:
-Track successful skill detail views.
+**用途**：跟踪成功打开的技能详情。
 
-Trigger:
-Sent when the detail modal is open and a concrete skill has been loaded.
+**触发条件**：详情弹窗已打开，且具体技能数据加载完成。
 
-Parameters:
+| 参数 | 值 |
+|---|---|
+| `skill_slug` | 当前技能 slug |
+| `skill_name` | 当前技能展示名称 |
+| `install_name` | 复制命令使用的安装标识符 |
 
-| Parameter | Value |
-| --- | --- |
-| `skill_slug` | Current skill slug |
-| `skill_name` | Current skill display name |
-| `install_name` | Install identifier used by the copy command |
+实现位置：[SkillModal.tsx](../web/src/components/SkillModal.tsx)
 
-Implementation:
-
-- [SkillModal.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/SkillModal.tsx)
-
-Notes:
-
-- The event is not sent during loading or error states.
-- Repeated renders of the same open skill are deduplicated.
+说明：加载或错误状态不会发送该事件；同一技能在弹窗保持打开时的重复渲染会被去重。
 
 ### `skill_install_copy`
 
-Purpose:
-Track install intent from the marketplace UI.
+**用途**：跟踪市场 UI 中的技能安装意图。
 
-Trigger:
-Sent when the user clicks the copy button for the generated install command.
+**触发条件**：用户点击生成安装命令的复制按钮。
 
-Parameters:
+| 参数 | 值 |
+|---|---|
+| `skill_slug` | 当前技能 slug |
+| `skill_name` | 当前技能展示名称 |
+| `install_name` | 复制命令使用的安装标识符 |
 
-| Parameter | Value |
-| --- | --- |
-| `skill_slug` | Current skill slug |
-| `skill_name` | Current skill display name |
-| `install_name` | Install identifier used by the copy command |
-
-Implementation:
-
-- [SkillModal.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/SkillModal.tsx)
+实现位置：[SkillModal.tsx](../web/src/components/SkillModal.tsx)
 
 ### `skill_source_click`
 
-Purpose:
-Track outbound clicks from the skill modal to the GitHub source page.
+**用途**：跟踪从技能弹窗跳转到 GitHub 源文件页面的点击。
 
-Trigger:
-Sent when the user clicks the source link in the modal header.
+**触发条件**：用户点击弹窗头部的源文件链接。
 
-Parameters:
-
-| Parameter | Value |
-| --- | --- |
-| `skill_slug` | Current skill slug |
-| `skill_name` | Current skill display name |
+| 参数 | 值 |
+|---|---|
+| `skill_slug` | 当前技能 slug |
+| `skill_name` | 当前技能展示名称 |
 | `target` | `github_skill_source` |
 
-Implementation:
-
-- [SkillModal.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/SkillModal.tsx)
+实现位置：[SkillModal.tsx](../web/src/components/SkillModal.tsx)
 
 ### `skill_search`
 
-Purpose:
-Track explicit user search behavior in the marketplace.
+**用途**：跟踪用户在市场中的主动搜索行为。
 
-Trigger:
-Sent when a non-empty search query remains unchanged for 500ms.
+**触发条件**：非空搜索词保持 500ms 未变化。
 
-Parameters:
+| 参数 | 值 |
+|---|---|
+| `query` | 去除首尾空格后的搜索文本 |
+| `result_count` | 筛选后技能列表的结果数量 |
 
-| Parameter | Value |
-| --- | --- |
-| `query` | Trimmed search text |
-| `result_count` | Number of results in the filtered skill list |
+实现位置：[Marketplace.tsx](../web/src/components/Marketplace.tsx)
 
-Implementation:
+说明：空搜索不会上报；相同的搜索词与结果数量组合会被去重。
 
-- [Marketplace.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/Marketplace.tsx)
+## 验证清单
 
-Notes:
+1. 加载首页，确认出现 `page_view`。
+2. 滚动市场页面，确认可见卡片产生 `skill_list_impression`。
+3. 点击卡片，确认依次出现 `skill_card_click` 和 `skill_detail_view`。
+4. 点击弹窗中的复制按钮，确认出现 `skill_install_copy`。
+5. 点击弹窗中的 GitHub 源文件链接，确认出现 `skill_source_click`。
+6. 在搜索框输入非空内容并停顿至少 500ms，确认出现 `skill_search`。
+7. 点击头部 GitHub 链接，确认出现 `nav_github_click`。
 
-- Empty searches are not reported.
-- Identical query and result-count combinations are deduplicated.
+## 代码索引
 
-## Validation Checklist
-
-Use the following checks when validating events in the GA dashboard:
-
-1. Load the homepage and confirm a `page_view` event appears.
-2. Scroll through the marketplace and confirm `skill_list_impression` events appear for visible cards.
-3. Click a card and confirm `skill_card_click` followed by `skill_detail_view`.
-4. Click the copy button in the modal and confirm `skill_install_copy`.
-5. Click the modal GitHub source link and confirm `skill_source_click`.
-6. Type a non-empty query into the search box, pause for at least 500ms, and confirm `skill_search`.
-7. Click the header GitHub link and confirm `nav_github_click`.
-
-## Code Map
-
-Analytics behavior is currently split across these files:
-
-- [layout.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/app/layout.tsx)
-- [gtag.ts](/Users/flc/data/www/open-source/flc1125/skills/web/src/lib/gtag.ts)
-- [GaPageViewTracker.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/GaPageViewTracker.tsx)
-- [GithubNavLink.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/GithubNavLink.tsx)
-- [Marketplace.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/Marketplace.tsx)
-- [SkillCard.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/SkillCard.tsx)
-- [SkillModal.tsx](/Users/flc/data/www/open-source/flc1125/skills/web/src/components/SkillModal.tsx)
+- [layout.tsx](../web/src/app/layout.tsx)
+- [gtag.ts](../web/src/lib/gtag.ts)
+- [GaPageViewTracker.tsx](../web/src/components/GaPageViewTracker.tsx)
+- [GithubNavLink.tsx](../web/src/components/GithubNavLink.tsx)
+- [Marketplace.tsx](../web/src/components/Marketplace.tsx)
+- [SkillCard.tsx](../web/src/components/SkillCard.tsx)
+- [SkillModal.tsx](../web/src/components/SkillModal.tsx)

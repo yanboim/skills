@@ -1,0 +1,7 @@
+interface:
+  display_name: "Research Publisher"
+  short_description: "整理内容并确认后发布到 Notion 和 GitHub"
+  default_prompt: "Use $research-publisher to turn source material into a SEO-ready Notion Post and GitHub Markdown draft."
+
+policy:
+  allow_implicit_invocation: true

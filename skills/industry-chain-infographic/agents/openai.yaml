@@ -1,0 +1,4 @@
+interface:
+  display_name: "产业链可视化信息图专家"
+  short_description: "生成财经产业链信息图文案、版式方案与AI绘图提示词"
+  default_prompt: "Use $industry-chain-infographic to create a clear Chinese industry-chain infographic for a finance or business topic."

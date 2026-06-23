@@ -1,38 +1,45 @@
-# Flc's Skills Engineering Guide
+# Yanbo Skills 工程指南
 
-This document provides detailed guidance for developing, debugging, building, and deploying the **Flc's Skills** marketplace.
+中文 | [English](./engineering-guide_EN.md)
 
-## 1. Tech Stack Overview
-*   **Frontend Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
-*   **Language**: TypeScript
-*   **Styling**: Tailwind CSS + @tailwindcss/typography
-*   **Animations**: Framer Motion
-*   **Accessible Components**: Headless UI
-*   **Data Parsing**: gray-matter (Markdown frontmatter parsing)
-*   **Icon Library**: Lucide React
-*   **Linting**: ESLint 9 with `eslint-config-next`
+本文档详细说明 **Yanbo Skills** 市场的开发、调试、构建与部署流程。
 
-## 2. Local Development
-After cloning the repository, follow these steps to start the development server:
+## 1. 技术栈概览
+
+- **前端框架**：[Next.js 16（App Router）](https://nextjs.org/)
+- **语言**：TypeScript
+- **样式**：Tailwind CSS + `@tailwindcss/typography`
+- **动画**：Framer Motion
+- **无障碍组件**：Headless UI
+- **数据解析**：gray-matter（Markdown frontmatter 解析）
+- **图标库**：Lucide React
+- **代码检查**：ESLint + `eslint-config-next`
+
+## 2. 本地开发
+
+克隆仓库后，执行以下命令启动开发服务器：
 
 ```bash
 cd web
 
-# Install dependencies
+# 安装依赖
 npm install
 
-# Start development server
+# 启动开发服务器
 npm run dev
 ```
-Visit [http://localhost:3000](http://localhost:3000) for preview.
 
-## 3. Data Maintenance
-The Skill data is stored in the `skills/` directory at the root level.
+打开 [http://localhost:3000](http://localhost:3000) 预览。
 
-### How to add a new Skill:
-1.  Create a new folder in the `skills/` directory (e.g., `my-new-skill`).
-2.  Create a `SKILL.md` file in that folder.
-3.  Fill in the metadata at the top of the `SKILL.md` and write the main content:
+## 3. 数据维护
+
+技能数据存放在仓库根目录的 `skills/` 中。
+
+### 添加新技能
+
+1. 在 `skills/` 中创建新目录，例如 `my-new-skill`。
+2. 在该目录中创建 `SKILL.md`。
+3. 填写 `SKILL.md` 顶部的元数据并编写主体内容：
 
 ```markdown
 ---
@@ -44,52 +51,60 @@ description: A concise summary of what this skill does and when to use it.
 Write the full Markdown documentation for the skill here.
 ```
 
-## 4. Debugging & Common Issues
-*   **Icons not displaying**: Ensure the icon name matches [Lucide Icons](https://lucide.dev/icons) naming conventions.
-*   **Styles not updating**: Verify Tailwind directives are correctly configured in `web/src/app/globals.css`.
-*   **Markdown rendering errors**: Check the YAML frontmatter format in `SKILL.md` (wrapped in `---` and free of YAML syntax errors).
-*   **Installation command looks wrong**: Use the frontmatter `name` field as the install identifier. The marketplace deep-link slug is a separate URL concern.
-*   **Lint command fails after a Next upgrade**: On Next.js 16, use the ESLint CLI via `npm run lint`; `next lint` is no longer the supported entrypoint.
-*   **Web app can't find skills after the move**: The marketplace now runs from `web/` and reads content from the repository-root `skills/` directory.
+4. 在 `web/` 中运行 `npm run generate:skills-data` 更新市场数据。
 
-## 5. Build & Testing
-It's recommended to perform a full build test before production deployment:
+## 4. 调试与常见问题
+
+- **图标未显示**：确认图标名称符合 [Lucide Icons](https://lucide.dev/icons) 的命名约定。
+- **样式未更新**：检查 `web/src/app/globals.css` 中的 Tailwind 配置。
+- **Markdown 渲染错误**：检查 `SKILL.md` 的 YAML frontmatter，确保使用 `---` 包裹且没有 YAML 语法错误。
+- **安装命令不正确**：使用 frontmatter 中的 `name` 字段作为安装标识符。市场深链接 slug 是独立的 URL 概念。
+- **Next.js 升级后 lint 失败**：通过 `npm run lint` 使用 ESLint CLI；Next.js 16 不再支持 `next lint`。
+- **移动后 Web 应用找不到技能**：市场应用从 `web/` 运行，并读取仓库根目录的 `skills/`。
+- **新增技能未立即显示**：重新运行数据生成脚本并重启开发服务器，以清除服务端数据缓存。
+
+## 5. 构建与测试
+
+生产部署前建议执行完整构建验证：
 
 ```bash
 cd web
 
-# Run lint checks
+# 运行代码检查
 npm run lint
 
-# Run full build
+# 运行完整构建
 npm run build
 ```
-Once the build is successful, the homepage is prerendered and the skill detail API route is emitted for on-demand reads.
 
-If you are building in a restricted local sandbox and hit a Turbopack process error, use:
+构建成功后，首页会被预渲染，技能详情 API 路由会按需提供数据。
+
+如果受限的本地沙箱出现 Turbopack 进程错误，可使用：
 
 ```bash
 npx next build --webpack
 ```
 
-That fallback is mainly useful for constrained local environments; standard deployments can continue using `npm run build`.
+该后备方案主要用于受限环境；标准部署仍可使用 `npm run build`。
 
-## 6. Deployment Guide (e.g., Vercel)
-This project is deeply compatible with Vercel; an automated build solution is recommended.
+## 6. 部署指南（以 Vercel 为例）
 
-1.  **Link Git Repository**: Import your repository into Vercel.
-2.  **Build Settings**: Vercel automatically recognizes Next.js once the project root is set correctly.
-    *   Root Directory: `web`
-    *   Framework Preset: `Next.js`
-    *   Build Command: `npm run build`
-    *   Install Command: `npm install`
-3.  **Environment Variables**: This project currently doesn't require specific production environment variables.
-4.  **Deployment**: Click Deploy. Once the build is finished, your site is live.
+本项目兼容 Vercel，建议使用自动化构建：
 
-### Other Deployment Methods:
-*   **Docker**: Use official Next.js images for containerized deployment.
-*   **Static Export**: Since this project uses API routes for dynamic details loading, `next export` is not recommended unless modified for static routing.
+1. **关联 Git 仓库**：将仓库导入 Vercel。
+2. **构建设置**：将项目根目录设置正确后，Vercel 会自动识别 Next.js。
+   - Root Directory：`web`
+   - Framework Preset：`Next.js`
+   - Build Command：`npm run build`
+   - Install Command：`npm install`
+3. **环境变量**：项目当前不需要特定的生产环境变量。
+4. **部署**：点击 Deploy，等待构建完成。
+
+### 其他部署方式
+
+- **Docker**：使用官方 Next.js 镜像进行容器化部署。
+- **静态导出**：项目使用 API 路由动态加载详情，除非改造为静态路由，否则不建议使用 `next export`。
 
 ---
 
-*For further technical questions, please refer to the [Next.js Documentation](https://nextjs.org/docs).*
+更多技术信息请参考 [Next.js 文档](https://nextjs.org/docs)。

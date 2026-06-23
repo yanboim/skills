@@ -3,7 +3,7 @@
 import * as Icons from 'lucide-react';
 import { trackEvent } from '@/lib/gtag';
 
-const GITHUB_REPO_URL = 'https://github.com/flc1125/skills';
+const GITHUB_REPO_URL = 'https://github.com/yanboim/skills';
 
 export function GithubNavLink() {
   return (
@@ -11,7 +11,7 @@ export function GithubNavLink() {
       href={GITHUB_REPO_URL}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="View project on GitHub"
+      aria-label="在 GitHub 查看项目"
       onClick={() => {
         trackEvent('nav_github_click', {
           target: 'github_repo',

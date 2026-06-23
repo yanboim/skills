@@ -9,7 +9,7 @@ export async function GET(
   const skill = await getSkillBySlug(slug);
 
   if (!skill) {
-    return NextResponse.json({ error: 'Skill not found' }, { status: 404 });
+    return NextResponse.json({ error: '未找到该技能' }, { status: 404 });
   }
 
   return NextResponse.json(skill);

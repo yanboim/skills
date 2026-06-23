@@ -10,8 +10,8 @@ import "./globals.css";
 const GA_MEASUREMENT_ID = 'G-GYPECK2498';
 
 export const metadata: Metadata = {
-  title: "Flc's Skills",
-  description: "A marketplace for skills and agents",
+  title: "Yanbo Skills",
+  description: "面向 AI Agent 的可复用技能市场",
   icons: {
     icon: '/favicon.svg',
   },
@@ -41,7 +41,7 @@ export default function RootLayout({
   `;
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
@@ -67,12 +67,12 @@ export default function RootLayout({
             <Link
               href="/"
               className="flex items-center gap-2 rounded-2xl outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[#8ddfc9]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0f1218]"
-              aria-label="Go to homepage"
+              aria-label="返回首页"
             >
               <div className="w-8 h-8 bg-black dark:bg-white rounded-xl flex items-center justify-center">
-                <span className="text-white dark:text-black font-bold text-lg">S</span>
+                <span className="text-white dark:text-black font-bold text-lg">Y</span>
               </div>
-              <span className="font-bold text-xl text-[#111318] dark:text-white">Flc&apos;s Skills</span>
+              <span className="font-bold text-xl text-[#111318] dark:text-white">Yanbo Skills</span>
             </Link>
             <nav className="rounded-full border border-black/5 bg-white/80 p-1 shadow-[0_16px_50px_-36px_rgba(15,23,42,0.65)] backdrop-blur-md dark:border-white/10 dark:bg-white/[0.08]">
               <div className="flex items-center gap-1">
@@ -89,19 +89,19 @@ export default function RootLayout({
         <main>{children}</main>
         <footer className="border-t border-black/5 py-12 mt-10 dark:border-white/10">
           <div className="max-w-7xl mx-auto px-4 text-center">
-            <p className="text-[#111318] dark:text-white font-bold mb-2">Flc&apos;s Skills</p>
-            <p className="text-[#687586] dark:text-[#aeb7c6] text-sm">Reusable agent workflows in a calm interface.</p>
+            <p className="text-[#111318] dark:text-white font-bold mb-2">Yanbo Skills</p>
+            <p className="text-[#687586] dark:text-[#aeb7c6] text-sm">在清爽界面中探索可复用的 Agent 工作流。</p>
             <p className="text-[#9aa4b2] dark:text-[#6f7887] text-xs mt-4">
-              © 2026 Flc&apos;s Skills. Created by{' '}
+              © 2026 Yanbo Skills，由{' '}
               <a
-                href="https://flc.io"
+                href="https://github.com/yanboim"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-semibold text-[#178a70] transition-colors hover:text-[#111318] dark:text-[#8ddfc9] dark:hover:text-white"
               >
-                Flc
+                Yanbo
               </a>
-              . All rights reserved.
+              创建。保留所有权利。
             </p>
           </div>
         </footer>

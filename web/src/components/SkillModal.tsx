@@ -4,6 +4,7 @@ import { Skill } from '@/lib/skills';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { X, Terminal, Copy, Check, ExternalLink, CalendarDays, Files } from 'lucide-react';
 import { formatSkillPublishedAt } from '@/lib/utils';
 import { trackEvent } from '@/lib/gtag';
@@ -16,7 +17,7 @@ interface SkillModalProps {
   onClose: () => void;
 }
 
-const GITHUB_BLOB_BASE_URL = 'https://github.com/flc1125/skills/blob/main/skills';
+const GITHUB_BLOB_BASE_URL = 'https://github.com/yanboim/skills/blob/main/skills';
 
 function normalizeGithubPathParts(parts: string[]) {
   const normalized: string[] = [];
@@ -63,9 +64,9 @@ function resolveSkillContentLink(skill: Skill, href?: string) {
 export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillModalProps) {
   const [copied, setCopied] = useState(false);
   const trackedViewSlug = useRef<string | null>(null);
-  const displayName = skill?.metadata?.name ?? skill?.name ?? 'Loading skill';
+  const displayName = skill?.metadata?.name ?? skill?.name ?? '正在加载技能';
   const publishedAt = formatSkillPublishedAt(skill?.metadata?.created);
-  const fileCountLabel = skill ? `${skill.fileCount} ${skill.fileCount === 1 ? 'file' : 'files'}` : null;
+  const fileCountLabel = skill ? `${skill.fileCount} 个文件` : null;
 
   useEffect(() => {
     if (copied) {
@@ -95,10 +96,10 @@ export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillMo
   if (!isOpen) return null;
 
   const command = skill
-    ? `npx skills add https://github.com/flc1125/skills --skill ${skill.installName}`
+    ? `npx skills add https://github.com/yanboim/skills --skill ${skill.installName}`
     : '';
   const sourceUrl = skill
-    ? `https://github.com/flc1125/skills/blob/main/skills/${skill.path}`
+    ? `https://github.com/yanboim/skills/blob/main/skills/${skill.path}`
     : '';
 
   const copyToClipboard = () => {
@@ -182,10 +183,10 @@ export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillMo
                               });
                             }}
                             className="inline-flex shrink-0 basis-full items-center justify-center gap-1.5 rounded-full bg-black px-2.5 py-1 text-white transition-colors hover:bg-[#27302d] dark:bg-white dark:text-black dark:hover:bg-[#dbe5e1] sm:basis-auto"
-                            title="View source file on GitHub"
+                            title="在 GitHub 查看源文件"
                           >
                             <ExternalLink size={12} className="flex-shrink-0" />
-                            <span>View on GitHub</span>
+                            <span>在 GitHub 查看</span>
                           </a>
                         </div>
                       ) : null}
@@ -195,7 +196,7 @@ export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillMo
                     <button
                       onClick={onClose}
                       className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#687586] shadow-sm ring-1 ring-black/5 transition hover:bg-[#eef8f5] hover:text-black focus:outline-none focus:ring-2 focus:ring-[#8ddfc9]/60 dark:bg-white/[0.08] dark:text-[#aeb7c6] dark:ring-white/10 dark:hover:bg-white/[0.14] dark:hover:text-white"
-                      aria-label="Close skill details"
+                      aria-label="关闭技能详情"
                     >
                       <X size={18} />
                     </button>
@@ -219,7 +220,45 @@ export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillMo
                       prose-headings:font-black prose-headings:text-[#111318] dark:prose-headings:text-white prose-h1:text-2xl prose-h2:text-xl
                       prose-p:text-sm prose-p:leading-7 prose-li:text-sm prose-li:leading-7 prose-a:font-semibold prose-a:text-[#178a70]">
                       <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
                         components={{
+                          table({ children }) {
+                            return (
+                              <div className="my-6 overflow-x-auto rounded-2xl border border-black/10 dark:border-white/10">
+                                <table className="my-0 min-w-full overflow-hidden text-left text-sm">
+                                  {children}
+                                </table>
+                              </div>
+                            );
+                          },
+                          thead({ children }) {
+                            return (
+                              <thead className="bg-[#eef8f5] text-[#24312e] dark:bg-white/10 dark:text-white">
+                                {children}
+                              </thead>
+                            );
+                          },
+                          tr({ children }) {
+                            return (
+                              <tr className="last:[&>td]:border-b-0">
+                                {children}
+                              </tr>
+                            );
+                          },
+                          th({ children }) {
+                            return (
+                              <th className="whitespace-nowrap border-b border-black/10 px-4 py-3 font-black dark:border-white/10">
+                                {children}
+                              </th>
+                            );
+                          },
+                          td({ children }) {
+                            return (
+                              <td className="border-b border-black/5 px-4 py-3 align-top leading-6 dark:border-white/10">
+                                {children}
+                              </td>
+                            );
+                          },
                           pre({ children }) {
                             return (
                               <pre className="my-4 overflow-x-auto rounded-2xl border border-black/5 bg-[#111318] p-4 text-xs shadow-[0_20px_60px_-44px_rgba(15,23,42,0.8)] dark:border-white/10 dark:bg-black">
@@ -266,7 +305,7 @@ export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillMo
                 {skill ? (
                   <div className="border-t border-black/5 bg-[linear-gradient(90deg,#f4fbf8,#f8f9ff)] px-5 py-5 dark:border-white/10 dark:bg-[linear-gradient(90deg,rgba(141,223,201,0.08),rgba(198,216,255,0.08))] sm:px-7">
                   <p className="text-[10px] font-bold text-[#7a8493] uppercase tracking-widest mb-2.5 ml-1 dark:text-[#aeb7c6]">
-                    Install this Skill
+                    安装此技能
                   </p>
                   <div className="group">
                     <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-black/5 bg-white px-4 py-3 shadow-sm transition-all group-hover:border-[#8ddfc9] dark:border-white/10 dark:bg-black/20">
@@ -286,12 +325,12 @@ export function SkillModal({ skill, isOpen, isLoading, error, onClose }: SkillMo
                         {copied ? (
                           <>
                             <Check size={14} />
-                            <span>Copied</span>
+                            <span>已复制</span>
                           </>
                         ) : (
                           <>
                             <Copy size={14} />
-                            <span>Copy</span>
+                            <span>复制</span>
                           </>
                         )}
                       </button>

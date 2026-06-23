@@ -56,20 +56,20 @@ export function formatSkillPublishedAt(value?: string | null, now = new Date()):
 
   if (diffMs < hourMs) {
     const minutes = Math.max(1, Math.floor(diffMs / (60 * 1000)));
-    return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+    return `${minutes} 分钟前`;
   }
 
   if (diffMs < dayMs) {
     const hours = Math.floor(diffMs / hourMs);
-    return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+    return `${hours} 小时前`;
   }
 
   if (isYesterday(date, now)) {
-    return 'Yesterday';
+    return '昨天';
   }
 
   if (days < 7) {
-    return `${days} day${days === 1 ? '' : 's'} ago`;
+    return `${days} 天前`;
   }
 
   return formatSkillDate(date);

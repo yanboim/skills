@@ -1,69 +1,71 @@
-# Contributing
+# 贡献指南
 
-This document defines the minimum contribution rules for `skills/*/SKILL.md` files in this repository. Unless stated otherwise, contributors should follow these rules when adding or modifying skills.
+中文 | [English](./CONTRIBUTING_EN.md)
 
-## Scope
+本文档定义了本仓库中 `skills/*/SKILL.md` 文件的最低贡献要求。除非另有说明，新增或修改技能时均应遵循这些规则。
 
-- `SKILL.md` files must use valid YAML frontmatter.
-- The existing `name` and `description` frontmatter fields remain the primary skill identity fields.
-- When additional repository-level or display-oriented metadata is needed, use the `metadata` object.
-- Human-facing explanatory content should be written in English.
+## 适用范围
 
-## Metadata
+- `SKILL.md` 必须使用有效的 YAML frontmatter。
+- 现有的 `name` 和 `description` frontmatter 字段仍是技能的主要身份字段。
+- 需要仓库级或展示用途的附加元数据时，请使用 `metadata` 对象。
+- 面向使用者的技能说明内容应使用英文编写。
 
-Each `SKILL.md` should include a `metadata` field. `metadata` must be an object. The current convention is:
+## 元数据
+
+每个 `SKILL.md` 都应包含 `metadata` 字段，且 `metadata` 必须是对象。当前约定如下：
 
 ```yaml
 metadata:
   name: Human-readable skill name
   description: One sentence describing what the skill is for.
-  author: Flc
+  author: Yanbo
   created: 2026-03-28T13:15:00Z
   version: 1.0.0
 ```
 
-Field requirements:
+字段要求：
 
-| Key | Type | Requirement | Rule |
+| 键 | 类型 | 要求 | 规则 |
 |---|---|---|---|
-| `name` | string | MUST | Human-readable display name derived from the skill name by default |
-| `description` | string | MUST | Purpose statement that describes what the skill does, not how it works internally |
-| `author` | string | MUST | Derived from the first recorded author of the skill |
-| `created` | string | MUST | Derived from the first recorded creation time of the skill, formatted as UTC `YYYY-MM-DDTHH:mm:ssZ` |
-| `version` | string | OPTIONAL | Metadata version for the skill; leave unset when no versioning policy exists |
+| `name` | string | 必需 | 默认根据技能名称生成易读的展示名称 |
+| `description` | string | 必需 | 描述技能用途，而不是内部实现方式 |
+| `author` | string | 必需 | 根据技能最早记录的作者确定 |
+| `created` | string | 必需 | 根据最早创建时间确定，并格式化为 UTC `YYYY-MM-DDTHH:mm:ssZ` |
+| `version` | string | 可选 | 技能元数据版本；没有版本策略时不设置 |
 
-Additional rules:
+附加规则：
 
-- `metadata` must appear inside the YAML frontmatter.
-- `metadata` keys must use lowercase English field names.
-- `metadata` values must be scalar strings.
-- `name` should default to the skill `name` transformed into title case display text.
-- `name` should remove hyphens and capitalize each word by default.
-- `name` should preserve well-known brand casing and common all-caps acronyms when applicable.
-- `description` should remain a single sentence.
-- `description` should stay under 150 characters.
-- `description` should not describe internal steps, call chains, or implementation details.
-- `created` must use a UTC ISO 8601 timestamp with a trailing `Z`.
-- If `version` is present, it should use `MAJOR.MINOR.PATCH` semantic versioning format.
-- `version` represents the current metadata or skill definition version, not a Git commit, date, or branch name.
-- Do not infer or auto-increment `version` unless an explicit versioning policy exists.
+- `metadata` 必须位于 YAML frontmatter 内。
+- `metadata` 的键必须使用小写英文字段名。
+- `metadata` 的值必须是标量字符串。
+- `name` 默认应将技能 `name` 转换为标题式展示文本。
+- `name` 默认应移除连字符并将每个单词首字母大写。
+- `name` 应保留知名品牌的大小写和常见全大写缩写。
+- `description` 应保持为一个句子。
+- `description` 应少于 150 个字符。
+- `description` 不应描述内部步骤、调用链或实现细节。
+- `created` 必须使用以 `Z` 结尾的 UTC ISO 8601 时间戳。
+- 如果存在 `version`，应使用 `MAJOR.MINOR.PATCH` 语义化版本格式。
+- `version` 表示当前元数据或技能定义版本，而不是 Git 提交、日期或分支名称。
+- 除非存在明确的版本策略，否则不要推断或自动递增 `version`。
 
-## Source Of Truth
+## 事实来源
 
-- The initial values for `metadata.author` and `metadata.created` should come from Git history.
-- Prefer the first commit recorded for the target `SKILL.md`.
-- If the file history is not sufficient to reflect the real creation point of the skill, you may use the first commit for the skill directory instead, but the reason should be noted in the commit description.
+- `metadata.author` 和 `metadata.created` 的初始值应来自 Git 历史。
+- 优先使用目标 `SKILL.md` 最早的提交记录。
+- 如果文件历史不能反映技能的真实创建时间，可以改用技能目录的首次提交，但应在提交说明中注明原因。
 
-## Update Policy
+## 更新策略
 
-- New skills should add `metadata` as soon as possible.
-- Existing skills that lack `metadata` should be filled in when first touched.
-- Editing the main skill content should not also change `author` or `created`.
-- If no explicit versioning policy exists, `version` should remain unset.
-- Only set or update `version` when the skill is intentionally maintained with versioning.
-- Existing `metadata` should only be corrected when the metadata is actually wrong.
+- 新技能应尽早添加 `metadata`。
+- 首次修改缺少 `metadata` 的现有技能时，应补充该字段。
+- 修改技能主体内容时，不应同时更改 `author` 或 `created`。
+- 没有明确版本策略时，`version` 应保持未设置。
+- 只有在技能明确采用版本管理时，才设置或更新 `version`。
+- 只有在现有元数据确实错误时才进行修正。
 
-## Example
+## 示例
 
 ```yaml
 ---
@@ -72,7 +74,7 @@ description: Maintain metadata for one target skill by reading repository rules,
 metadata:
   name: Skill Metadata Maintainer
   description: Initialize or update the metadata object in one target skill's SKILL.md.
-  author: Flc
+  author: Yanbo
   created: 2026-03-28T13:15:00Z
 ---
 ```

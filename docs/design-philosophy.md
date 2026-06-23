@@ -1,28 +1,37 @@
-# Flc's Skills Marketplace Design Philosophy
+# Yanbo Skills 市场设计理念
 
-The core objective of this project is to build an **"Efficient, Minimalist, and Developer-Friendly"** AI Skill discovery and distribution platform. During the design and implementation process, we followed these core principles, which can be reused and referenced in future similar projects.
+中文 | [English](./design-philosophy_EN.md)
 
-## 1. Minimalist Design
-*   **SaaS Aesthetics**: Avoid flashy decorations; use a neutral color palette (black, white, gray) and high-whitespace layouts to emphasize information scanning efficiency.
-*   **Atomic Functionality**: Removed all non-core fields (such as author, version, category tags), allowing users to focus entirely on the Skill's name and functional description.
-*   **Unified Icon Language**: Uses a consistent `Terminal` icon to reinforce the "tool/command" attribute.
+本项目的核心目标是打造一个**高效、极简、对开发者友好**的 AI 技能发现与分发平台。设计和实现遵循以下原则，这些原则也可用于后续迭代和类似项目。
 
-## 2. Efficiency-First Interaction
-*   **Embedded Install Commands**: Installation instructions are embedded directly into the Skill details with a one-click copy function. Seamless integration from discovery to installation is achieved via the `npx` CLI tool.
-*   **Immersive Modals**: Details pop up instantly without breaking the user's browsing context. Closing returns the user exactly where they were, making the interaction cost extremely low.
-*   **Deep Linking**: Every Skill has a unique URL parameter (`?skill=slug`), supporting direct sharing and precise access.
+## 1. 极简设计
 
-## 3. Dynamic Data-Driven (File-based CMS)
-*   **Git as Database**: No traditional backend database is used; instead, the local file system is scanned directly.
-*   **Zero-Config Expansion**: Adding a new folder and `SKILL.md` in the `skills/` directory allows the marketplace to automatically recognize and list it. This architecture significantly reduces content maintenance costs.
+- **SaaS 美学**：避免炫目的装饰，使用中性色彩与高留白布局，提高信息浏览效率。
+- **原子化功能**：移除作者、版本和分类标签等非核心展示字段，让用户专注于技能名称和功能说明。
+- **统一图标语言**：使用一致的终端与工具类图标，强化技能的工具和命令属性。
 
-## 4. Extreme Performance (Performance & SEO)
-*   **Hybrid Rendering**: The homepage preloads the skill list on the server, while full skill content is fetched on demand only when a modal is opened from a deep link or user interaction.
-*   **Instant Initial Load**: By reading files on the server side, the client doesn't need to make extra API requests for the initial list render, keeping first paint fast.
+## 2. 效率优先的交互
 
-## 5. Cross-Platform Consistency
-*   **Native Dark Mode**: Full native support for system dark mode switching, from the UI to the Favicon, ensuring long-term usage comfort.
+- **内嵌安装命令**：将安装说明直接放入技能详情，并提供一键复制功能，通过 `npx` CLI 完成从发现到安装的衔接。
+- **沉浸式弹窗**：详情即时弹出，不打断浏览上下文；关闭后仍停留在原位置，降低交互成本。
+- **深链接**：每个技能都有唯一 URL 参数（`?skill=slug`），支持直接分享和精确访问。
+
+## 3. 动态数据驱动（文件式 CMS）
+
+- **以 Git 为数据库**：不使用传统后端数据库，而是扫描本地文件系统生成技能数据。
+- **低配置扩展**：在 `skills/` 中新增目录和 `SKILL.md`，再运行数据生成脚本，即可让市场识别并展示新技能。
+
+## 4. 性能与 SEO
+
+- **混合渲染**：首页在服务端预加载技能列表；只有用户打开弹窗或访问深链接时，才按需获取完整技能内容。
+- **快速首屏**：初始列表由服务端读取，客户端无需额外请求即可完成首次渲染。
+
+## 5. 跨平台一致性
+
+- **原生深色模式**：从界面到 favicon 均支持系统主题切换，提升长期使用体验。
+- **响应式布局**：卡片、搜索和详情弹窗在桌面与移动端保持一致的信息层级。
+- **无障碍交互**：使用语义化控件、键盘焦点状态和明确的辅助标签。
 
 ---
 
-*This document aims to record the soul of this project. Any future functional iterations or style adjustments should be considered based on these principles.*
+本文档记录项目的设计核心。未来的功能迭代和视觉调整都应以这些原则为判断基础。
