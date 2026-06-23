@@ -1,4 +1,6 @@
 .next/
+.open-next/
 data/skills.json
 node_modules/
 tsconfig.tsbuildinfo
+.dev.vars
