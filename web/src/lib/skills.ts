@@ -1,5 +1,4 @@
-import fs from 'fs';
-import path from 'path';
+import generatedSkillsDataset from '../../data/skills.json';
 
 export interface SkillMetadata {
   metadata: SkillFrontmatterMetadata | null;
@@ -20,7 +19,7 @@ export interface SkillFrontmatterMetadata {
   description: string;
   author: string;
   created: string;
-  version?: string;
+  version?: string | null;
 }
 
 interface SkillsDataset {
@@ -28,25 +27,8 @@ interface SkillsDataset {
   skills: Skill[];
 }
 
-const DATASET_PATH = path.join(process.cwd(), 'data', 'skills.json');
-
-let cachedDataset: SkillsDataset | null = null;
-
 function loadSkillsDataset(): SkillsDataset {
-  if (cachedDataset) {
-    return cachedDataset;
-  }
-
-  if (!fs.existsSync(DATASET_PATH)) {
-    throw new Error(
-      `Missing generated skills dataset at ${DATASET_PATH}. Run "npm run generate:skills-data" from web/.`
-    );
-  }
-
-  const fileContents = fs.readFileSync(DATASET_PATH, 'utf8');
-  cachedDataset = JSON.parse(fileContents) as SkillsDataset;
-
-  return cachedDataset;
+  return generatedSkillsDataset as SkillsDataset;
 }
 
 export async function getSkills(): Promise<SkillMetadata[]> {
