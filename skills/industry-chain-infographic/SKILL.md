@@ -3,7 +3,7 @@ name: industry-chain-infographic
 metadata:
   name: 产业链信息图
   description: 将复杂产业链、商业逻辑和技术路线整理为中文投研信息图与 AI 绘图提示词。
-  author: Yanbo
+  author: YanBo
   created: 2026-05-22T10:07:38Z
 description: "Create Chinese finance and business industry-chain infographic content, layout briefs, and AI image prompts. Use when the user asks for 产业链图, 产业链全景图, 行业图谱, 商业逻辑图, 技术路线图, 投研信息图, 公众号长图, 小红书知识卡片, or visual explanations of industries such as AI, semiconductors, lithium batteries, EVs, photovoltaics, robotics, compute, data centers, low-altitude economy, and energy storage."
 ---

@@ -1,4 +1,4 @@
-# Yanbo Skills 市场设计理念
+# YanBo Skills 市场设计理念
 
 中文 | [English](./design-philosophy_EN.md)
 

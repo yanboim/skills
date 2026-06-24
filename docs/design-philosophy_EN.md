@@ -1,4 +1,4 @@
-# Yanbo Skills Marketplace Design Philosophy
+# YanBo Skills Marketplace Design Philosophy
 
 [中文](./design-philosophy.md) | English
 

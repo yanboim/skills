@@ -1,8 +1,8 @@
-# Yanbo Skills Engineering Guide
+# YanBo Skills Engineering Guide
 
 [中文](./engineering-guide.md) | English
 
-This document provides detailed guidance for developing, debugging, building, and deploying the **Yanbo Skills** marketplace.
+This document provides detailed guidance for developing, debugging, building, and deploying the **YanBo Skills** marketplace.
 
 ## 1. Tech Stack Overview
 

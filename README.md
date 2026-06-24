@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="web/public/favicon.svg" width="64" height="64" alt="Yanbo Skills 标志" />
+  <img src="web/public/favicon.svg" width="64" height="64" alt="YanBo Skills 标志" />
 
-  # Yanbo Skills
+  # YanBo Skills
 
   面向 AI Agent 的可复用技能集合与可视化技能市场。
 
@@ -18,7 +18,7 @@
 
 ## 项目简介
 
-Yanbo Skills 是一个开放的 AI Agent 技能仓库。每个技能都包含独立的 `SKILL.md`，可以作为 Agent 工作流、AI 助手或其他兼容工具的能力模块直接安装和复用。
+YanBo Skills 是一个开放的 AI Agent 技能仓库。每个技能都包含独立的 `SKILL.md`，可以作为 Agent 工作流、AI 助手或其他兼容工具的能力模块直接安装和复用。
 
 仓库由两部分组成：
 

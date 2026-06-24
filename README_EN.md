@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="web/public/favicon.svg" width="64" height="64" alt="Yanbo Skills logo" />
+  <img src="web/public/favicon.svg" width="64" height="64" alt="YanBo Skills logo" />
 
-  # Yanbo Skills
+  # YanBo Skills
 
   A reusable skill collection and visual marketplace for AI agents.
 
@@ -18,7 +18,7 @@
 
 ## Overview
 
-Yanbo Skills is an open repository of reusable skills for AI agents. Each skill includes its own `SKILL.md` and can be installed as a building block for agent workflows, AI assistants, and other compatible tools.
+YanBo Skills is an open repository of reusable skills for AI agents. Each skill includes its own `SKILL.md` and can be installed as a building block for agent workflows, AI assistants, and other compatible tools.
 
 The repository has two main parts:
 

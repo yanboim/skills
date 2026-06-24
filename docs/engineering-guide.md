@@ -1,8 +1,8 @@
-# Yanbo Skills 工程指南
+# YanBo Skills 工程指南
 
 中文 | [English](./engineering-guide_EN.md)
 
-本文档详细说明 **Yanbo Skills** 市场的开发、调试、构建与部署流程。
+本文档详细说明 **YanBo Skills** 市场的开发、调试、构建与部署流程。
 
 ## 1. 技术栈概览
 

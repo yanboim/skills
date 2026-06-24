@@ -19,7 +19,7 @@ Each `SKILL.md` should include a `metadata` field. `metadata` must be an object.
 metadata:
   name: Human-readable skill name
   description: One sentence describing what the skill is for.
-  author: Yanbo
+  author: YanBo
   created: 2026-03-28T13:15:00Z
   version: 1.0.0
 ```
@@ -74,7 +74,7 @@ description: Maintain metadata for one target skill by reading repository rules,
 metadata:
   name: Skill Metadata Maintainer
   description: Initialize or update the metadata object in one target skill's SKILL.md.
-  author: Yanbo
+  author: YanBo
   created: 2026-03-28T13:15:00Z
 ---
 ```

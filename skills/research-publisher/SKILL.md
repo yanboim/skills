@@ -3,7 +3,7 @@ name: research-publisher
 metadata:
   name: 研究发布助手
   description: 整理研究内容并生成 SEO 友好的文章，可在确认后发布到 Notion 和 GitHub。
-  author: Yanbo
+  author: YanBo
   created: 2026-05-22T08:19:56Z
 description: 整理文章、研报、客户对话、股票分析或技术笔记；读取 Notion Post 数据库现有分类和标签；生成 SEO 友好的 title、summary、slug、category、tags 和 Markdown 正文；可根据文章内容或用户指令生成配图，上传 Cloudflare R2，返回图片链接并插入 Markdown 正文；在用户确认后推送到 Notion 与 GitHub 私有仓库。
 ---
